@@ -13,11 +13,19 @@ app.use(express.json({ limit: '50mb' })); // חשוב! מאפשר קבלת תמ�
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://noy_db_user:4Lw4Ddn2Vx8WMcKv@cluster0.pbfhx5m.mongodb.net/crm_db?retryWrites=true&w=majority&appName=Cluster0";
+
+if (!MONGODB_URI) {
+    console.error('❌ MongoDB URI is missing!');
+    process.exit(1);
+}
 
 mongoose.connect(MONGODB_URI)
     .then(() => console.log('✅ Connected to MongoDB Atlas'))
-    .catch(err => console.error('❌ MongoDB Connection Error:', err));
+    .catch(err => {
+        console.error('❌ MongoDB Connection Error:', err);
+        // Don't exit - let the server continue (for development)
+    });
 
 // --- עדכון הסכימה: הוספנו שדות לחתימה ---
 const ProposalSchema = new mongoose.Schema({
@@ -44,10 +52,15 @@ app.get('/', (req, res) => {
 
 app.post('/api/proposals', async (req, res) => {
     try {
+        // Check if MongoDB is connected
+        if (mongoose.connection.readyState !== 1) {
+            return res.status(503).json({ error: 'Database not connected. Please wait...' });
+        }
         const { title, budget, clientName, appData, _id } = req.body;
         // אם נשלח ID, נעדכן. אחרת ניצור חדש.
         if (_id) {
             const updated = await Proposal.findByIdAndUpdate(_id, { title, budget, clientName, appData }, { new: true });
+            if (!updated) return res.status(404).json({ error: 'Proposal not found' });
             return res.json(updated);
         }
         const newProposal = new Proposal({ title, budget, clientName, appData });
@@ -55,16 +68,21 @@ app.post('/api/proposals', async (req, res) => {
         res.status(201).json(savedProposal);
     } catch (error) {
         console.error('Error saving proposal:', error);
-        res.status(500).json({ error: error.message || 'Failed to save' });
+        res.status(500).json({ error: error.message || 'Failed to save proposal' });
     }
 });
 
 app.get('/api/proposals', async (req, res) => {
     try {
+        // Check if MongoDB is connected
+        if (mongoose.connection.readyState !== 1) {
+            return res.status(503).json({ error: 'Database not connected. Please wait...' });
+        }
         const proposals = await Proposal.find().sort({ createdAt: -1 });
-        res.json(proposals);
+        res.json(proposals || []); // Ensure we always return an array
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch' });
+        console.error('Error fetching proposals:', error);
+        res.status(500).json({ error: error.message || 'Failed to fetch proposals' });
     }
 });
 
