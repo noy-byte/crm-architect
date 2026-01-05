@@ -1,0 +1,13 @@
+{
+  "name": "crm-architect-pro",
+  "version": "1.0.0",
+  "description": "CRM System with Remote Signing",
+  "main": "index.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^7.6.3",
+    "serverless-http": "^3.2.0"
+  }
+}

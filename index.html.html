@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A.D_VANTAGE // CRM Architect Pro</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Montserrat:wght@400;600;700;800&family=Fira+Code:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root { 
+            --bg-deep: #020617; 
+            --cyan: #38bdf8; 
+            --lime: #a3e635; 
+            --white: #FFFFFF; 
+            --glass: rgba(255, 255, 255, 0.03); 
+            --glass-border: rgba(148, 163, 184, 0.1); 
+            --glass-hover: rgba(30, 41, 59, 0.6);
+            --gradient-primary: linear-gradient(135deg, var(--cyan), var(--lime));
+            --gradient-dark: linear-gradient(135deg, #1e293b, #0f172a);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background-color: var(--bg-deep); 
+            color: var(--white); 
+            font-family: 'Heebo', sans-serif; 
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .font-tech { 
+            font-family: 'Montserrat', sans-serif; 
+            letter-spacing: -0.02em; 
+        }
+
+        /* Loading Screen - Enhanced */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-deep);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .loading-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 20px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: logoFloat 2s ease-in-out infinite;
+            box-shadow: 0 20px 60px rgba(56, 189, 248, 0.3);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loading-logo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.05); }
+        }
+        
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 24px;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textPulse 2s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes textPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .loading-bar {
+            width: 200px;
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .loading-progress {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            animation: loadProgress 2s ease-out forwards;
+        }
+        
+        @keyframes loadProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        /* Enhanced Aurora Background */
+        .aurora-container { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: -2; 
+            background: var(--bg-deep); 
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .aurora-blob { 
+            position: absolute; 
+            filter: blur(100px); 
+            opacity: 0.12; 
+            border-radius: 50%; 
+            animation: drift 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+        
+        .blob-1 { 
+            top: -20%; 
+            left: -20%; 
+            width: 70vw; 
+            height: 70vw; 
+            background: radial-gradient(circle, var(--cyan), transparent);
+        } 
+        
+        .blob-2 { 
+            bottom: -20%; 
+            right: -20%; 
+            width: 60vw; 
+            height: 60vw; 
+            background: radial-gradient(circle, var(--lime), transparent);
+            animation-delay: -7s;
+        }
+        
+        .blob-3 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, #8b5cf6, transparent);
+            animation-delay: -14s;
+            opacity: 0.08;
+        }
+        
+        @keyframes drift { 
+            0% { transform: translate(0, 0) scale(1); } 
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(10px, -10px) scale(1); }
+        }
+
+        /* Enhanced Glass Panels */
+        .glass-panel { 
+            background: linear-gradient(135deg, rgba(2, 6, 23, 0.9), rgba(15, 23, 42, 0.8));
+            backdrop-filter: blur(30px) saturate(150%);
+            -webkit-backdrop-filter: blur(30px) saturate(150%);
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .glass-card { 
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.6));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px; 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.3), transparent);
+            animation: shimmerLine 3s infinite;
+        }
+        
+        @keyframes shimmerLine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .glass-card:hover { 
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(56, 189, 248, 0.15);
+        }
+        
+        /* Enhanced Navigation */
+        .nav-item { 
+            cursor: pointer; 
+            border-right: 3px solid transparent; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #94a3b8;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.1), transparent);
+            transition: right 0.5s;
+        }
+        
+        .nav-item:hover::before {
+            right: 100%;
+        }
+        
+        .nav-item:hover { 
+            color: white; 
+            background: rgba(56, 189, 248, 0.05);
+            padding-right: 20px;
+        }
+        
+        .nav-item.active { 
+            background: linear-gradient(90deg, rgba(56, 189, 248, 0.15), transparent);
+            border-right-color: var(--cyan); 
+            color: var(--cyan); 
+            font-weight: 700;
+        }
+        
+        /* Enhanced Inputs */
+        input, textarea, select { 
+            background: linear-gradient(135deg, rgba(2, 6, 23, 0.7), rgba(15, 23, 42, 0.5)) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            color: white !important; 
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 12px 16px;
+        }
+        
+        input:focus, textarea:focus, select:focus { 
+            outline: none; 
+            border-color: var(--cyan) !important;
+            background: linear-gradient(135deg, rgba(2, 6, 23, 0.9), rgba(15, 23, 42, 0.7)) !important;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2), inset 0 0 20px rgba(56, 189, 248, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* Enhanced Buttons */
+        .btn-primary { 
+            background: var(--gradient-primary);
+            color: #020617; 
+            font-weight: 800; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-primary:hover { 
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4);
+        }
+        
+        /* Enhanced Step Arrows */
+        .step-arrow { 
+            position: relative; 
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+            color: #94a3b8; 
+            padding: 14px 28px; 
+            margin-left: 25px; 
+            clip-path: polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%, 15% 50%);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            cursor: text; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 150px;
+        }
+        
+        .step-arrow:hover {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(163, 230, 53, 0.1));
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        /* Enhanced Tooltips */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+        
+        .tooltip::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            white-space: nowrap;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            opacity: 0;
+        }
+        
+        .tooltip:hover::after {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+        }
+        
+        /* Enhanced Modal */
+        .modal-overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 100; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .modal-overlay.open { 
+            opacity: 1; 
+            pointer-events: auto; 
+        }
+        
+        .modal-content { 
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 24px; 
+            width: 90%; 
+            max-width: 900px; 
+            max-height: 85vh; 
+            display: flex; 
+            flex-direction: column;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .modal-overlay.open .modal-content {
+            transform: scale(1) translateY(0);
+        }
+        
+        /* Enhanced Animations */
+        .animate-fade-in { 
+            animation: enhancedFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .animate-slide-up { 
+            animation: enhancedSlideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes enhancedFadeIn { 
+            from { 
+                opacity: 0; 
+                filter: blur(10px);
+            } 
+            to { 
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+        
+        @keyframes enhancedSlideUp { 
+            from { 
+                transform: translateY(30px) scale(0.95);
+                opacity: 0;
+            } 
+            to { 
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+        
+        /* Enhanced Scrollbar */
+        ::-webkit-scrollbar { 
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track { 
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb { 
+            background: linear-gradient(180deg, var(--cyan), var(--lime));
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--lime), var(--cyan));
+        }
+        
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        
+        /* Mobile Enhancements */
+        @media (max-width: 768px) { 
+            .step-arrow { 
+                clip-path: none; 
+                margin-left: 0; 
+                width: 100%; 
+                border-radius: 12px; 
+                margin-bottom: 0.75rem;
+                padding: 12px 20px;
+            }
+            
+            .glass-card {
+                border-radius: 12px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                border-radius: 16px;
+                max-height: 90vh;
+            }
+            
+            body { 
+                height: 100dvh;
+            }
+            
+            .loading-logo {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .loading-text {
+                font-size: 20px;
+            }
+        }
+        
+        /* Smooth Transitions */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-logo">
+            <i data-lucide="code-2" style="width: 48px; height: 48px; color: white;"></i>
+        </div>
+        <div class="loading-text">A.D_VANTAGE</div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+    </div>
+
+    <!-- Aurora Background Enhanced -->
+    <div class="aurora-container">
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
+        <div class="aurora-blob blob-3"></div>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div id="main-app-wrapper" class="flex flex-col h-full" style="opacity: 0;">
+        <!-- Header Enhanced -->
+        <header class="glass-panel z-30 h-16 flex items-center justify-between px-4 md:px-6 border-b border-white/5 flex-none">
+            <div class="flex items-center gap-3 md:gap-4 overflow-hidden">
+                <img src="https://live.staticflickr.com/65535/55017651113_aec1078c9d_n.jpg" 
+                     class="w-10 h-10 md:w-12 md:h-12 rounded-xl shadow-xl border border-white/20 hover:scale-110 transition-transform cursor-pointer" 
+                     alt="Logo">
+                <div class="flex flex-col">
+                    <div class="font-tech font-bold text-sm md:text-lg tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-[#38bdf8] to-[#a3e635] animate-pulse">
+                        &lt;/A.D_VANTAGE&gt;
+                    </div>
+                    <div class="flex items-center gap-2 text-[10px] md:text-xs text-gray-400">
+                        <span id="connection-status" class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                        <span id="connection-text">Connecting...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2 md:gap-3">
+                <button onclick="simulateStressTest()" 
+                        class="btn-secondary px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-2 text-red-400 border border-red-500/30 hover:bg-red-500/10 transition-all hover:scale-105 tooltip" 
+                        data-tip="מילוי נתוני דמו לבדיקה">
+                    <i data-lucide="activity" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">בדיקה</span>
+                </button>
+                
+                <button onclick="saveToCloud()" 
+                        class="px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-2 text-[#38bdf8] bg-[#38bdf8]/10 border border-[#38bdf8]/30 hover:bg-[#38bdf8]/20 transition-all hover:scale-105 tooltip"
+                        data-tip="שמירה בענן">
+                    <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">שמור בענן</span>
+                </button>
+                
+                <button onclick="openHistory()" 
+                        class="px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-2 text-white border border-white/20 hover:bg-white/10 transition-all hover:scale-105 tooltip"
+                        data-tip="הצעות שמורות">
+                    <i data-lucide="archive" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">ארכיון</span>
+                </button>
+                
+                <button onclick="downloadSummary()" 
+                        class="btn-primary px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 shadow-xl hover:shadow-2xl">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">הורד HTML</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Desktop Navigation -->
+            <nav class="w-72 glass-panel border-l border-white/5 overflow-y-auto hidden md:block flex-none">
+                <div class="p-6">
+                    <h3 class="text-xs font-bold text-gray-500 font-tech uppercase tracking-widest mb-6 opacity-70">
+                        SYSTEM MODULES
+                    </h3>
+                    <ul class="space-y-2" id="nav-list"></ul>
+                </div>
+            </nav>
+            
+            <!-- Mobile Navigation -->
+            <nav class="md:hidden glass-panel border-b border-white/5 overflow-x-auto whitespace-nowrap p-3 flex gap-2 flex-none scrollbar-hide" 
+                 id="mobile-nav"></nav>
+            
+            <!-- Main Content -->
+            <main class="flex-1 overflow-y-auto p-4 md:p-10 scroll-smooth relative" id="main-content">
+                <!-- Dynamic Content Here -->
+            </main>
+        </div>
+    </div>
+
+    <!-- CLIENT VIEW CONTAINER -->
+    <div id="client-view-container" class="hidden w-full h-full overflow-y-auto bg-[#020617] p-4 md:p-8"></div>
+
+    <!-- HISTORY MODAL Enhanced -->
+    <div id="history-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-gradient-to-r from-transparent via-[#38bdf8]/5 to-transparent">
+                <h3 class="text-xl md:text-2xl font-bold text-white flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#38bdf8] to-[#a3e635] flex items-center justify-center">
+                        <i data-lucide="archive" class="w-5 h-5 text-[#020617]"></i>
+                    </div>
+                    ארכיון הצעות
+                </h3>
+                <button onclick="document.getElementById('history-modal').classList.remove('open')" 
+                        class="text-gray-400 hover:text-white transition-colors hover:rotate-90 transform duration-300">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="p-6 flex-1 overflow-y-auto" id="history-list">
+                <div class="text-center text-gray-500 py-12">
+                    <i class="fa-solid fa-spinner fa-spin text-4xl mb-4"></i>
+                    <div>טוען נתונים...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const API_URL = '/api/proposals'; 
+        window.currentProposalId = null;
+
+        // EXPANDED DATA TEMPLATES
+        const entityTemplates = [
+            { name: 'לידים (Leads)', fields: ['שם פרטי', 'שם משפחה', 'טלפון', 'אימייל', 'מקור הגעה', 'סטטוס', 'הערות'] },
+            { name: 'לקוחות (Contacts)', fields: ['שם מלא', 'תפקיד', 'טלפון', 'אימייל', 'מקושר לחברה'] },
+            { name: 'חברות (Accounts)', fields: ['שם החברה', 'ח.פ/ע.מ', 'כתובת', 'אתר אינטרנט', 'תעשייה', 'גודל חברה'] },
+            { name: 'עסקאות (Deals)', fields: ['שם העסקה', 'שווי עסקה', 'שלב בפייפליין', 'תאריך סגירה צפוי', 'איש קשר ראשי'] },
+            { name: 'משימות (Tasks)', fields: ['נושא', 'תאריך יעד', 'עדיפות', 'סטטוס', 'מוקצה ל-'] },
+            { name: 'פגישות (Meetings)', fields: ['נושא', 'תאריך ושעה', 'מיקום', 'משתתפים', 'סיכום פגישה'] },
+            { name: 'קריאות שירות (Tickets)', fields: ['נושא התקלה', 'תיאור', 'דחיפות', 'סטטוס טיפול', 'נציג מטפל'] },
+            { name: 'מוצרים (Products)', fields: ['שם מוצר', 'מק"ט', 'מחיר מחירון', 'עלות', 'מלאי', 'תיאור'] },
+            { name: 'הצעות מחיר (Quotes)', fields: ['מספר הצעה', 'לקוח', 'תאריך תוקף', 'סה"כ לתשלום', 'סטטוס', 'לינק למסמך'] },
+            { name: 'הזמנות (Orders)', fields: ['מספר הזמנה', 'תאריך', 'לקוח', 'פריטים', 'סה"כ', 'סטטוס תשלום'] },
+            { name: 'חוזים (Contracts)', fields: ['שם חוזה', 'תאריך התחלה', 'תאריך סיום', 'קובץ חתום', 'תנאי תשלום'] },
+            { name: 'קמפיינים (Campaigns)', fields: ['שם קמפיין', 'תקציב', 'פלטפורמה', 'קהל יעד', 'תאריך התחלה', 'לידים שהגיעו'] },
+            { name: 'שותפים (Partners)', fields: ['שם שותף', 'סוג שותפות', 'עמלה מוסכמת', 'איש קשר', 'הסכם חתום'] },
+            { name: 'מתחרים (Competitors)', fields: ['שם מתחרה', 'חוזקות', 'חולשות', 'מחיר מוערך', 'הערות'] },
+            { name: 'עובדים (Employees)', fields: ['שם מלא', 'תפקיד', 'מחלקה', 'טלפון', 'אימייל', 'תאריך תחילת עבודה'] }
+        ];
+
+        // EXPANDED AUTOMATION TEMPLATES
+        const automationTemplates = [
+            { name: 'ליד חדש -> משימה', trigger: 'נוצר ליד חדש', action: 'צור משימת "יצירת קשר ראשוני" לנציג' },
+            { name: 'עסקה נסגרה -> חוזה', trigger: 'סטטוס עסקה שונה ל-Won', action: 'הפק חוזה אוטומטי ושלח לחתימה' },
+            { name: 'עסקה גדולה -> התראה', trigger: 'שווי עסקה מעל ₪50,000', action: 'שלח התראת Slack למנהל המכירות' },
+            { name: 'לקוח לא פעיל -> תזכורת', trigger: 'אין פעילות במשך 30 יום', action: 'צור משימת "שיחת שימור" למנהל תיק' },
+            { name: 'יום הולדת -> אימייל', trigger: 'תאריך יום הולדת של איש קשר', action: 'שלח אימייל ברכה אוטומטי + קופון' },
+            { name: 'פגישה נקבעה -> WhatsApp', trigger: 'נוצרה פגישה ביומן', action: 'שלח תזכורת WhatsApp ללקוח שעה לפני' },
+            { name: 'הצעת מחיר פגה -> התראה', trigger: 'תוקף הצעת מחיר עומד לפוג (יומיים)', action: 'שלח התראה לנציג המטפל' },
+            { name: 'טופס באתר -> ליד', trigger: 'התקבל טופס צור קשר באתר', action: 'צור ליד חדש ושלח מייל "תודה שפנית"' },
+            { name: 'סטטוס תקלה -> עדכון', trigger: 'סטטוס קריאת שירות שונה', action: 'שלח עדכון SMS ללקוח על שינוי הסטטוס' },
+            { name: 'לקוח VIP -> SLA', trigger: 'נפתחה קריאה ללקוח VIP', action: 'הגדר דחיפות "גבוהה" והקפץ SLA ל-4 שעות' }
+        ];
+
+        const reportCatalog = {
+            sales: [ 
+                { id: 'sales_funnel', name: 'משפך מכירות (Pipeline)', desc: 'כמות וכסף בכל שלב במכירה' }, 
+                { id: 'sales_forecast', name: 'תחזית מול יעד', desc: 'צפי סגירות מול היעד החודשי' } 
+            ],
+            marketing: [ 
+                { id: 'mkt_source', name: 'מקורות לידים', desc: 'מאיפה הגיעו הלידים?' }, 
+                { id: 'mkt_conversion', name: 'יחס המרה', desc: 'איכות הלידים' } 
+            ],
+            service: [ 
+                { id: 'srv_volume', name: 'עומס קריאות', desc: 'כמות קריאות פתוחות' }, 
+                { id: 'srv_sla', name: 'זמני תגובה', desc: 'מהירות הטיפול' } 
+            ],
+            management: [ 
+                { id: 'mng_churn', name: 'נטישת לקוחות', desc: 'אחוז העוזבים' }, 
+                { id: 'mng_ltv', name: 'שווי חיי לקוח', desc: 'ערך לקוח ממוצע' } 
+            ]
+        };
+
+        const discountOptions = [
+            { id: 'ff', name: 'Friends & Family', label: 'הנחה מיוחדת', defaultAmount: '1000' },
+            { id: 'early', name: 'Early Adopter', label: 'הנחת אימוץ מוקדם', defaultAmount: '1500' },
+            { id: 'volume', name: 'Volume', label: 'הנחת כמות', defaultAmount: '500' },
+            { id: 'custom', name: 'Custom', label: 'הנחה מותאמת אישית', defaultAmount: '0' }
+        ];
+
+        // App State
+        window.appData = {
+            currentSection: 'strategy',
+            sections: [
+                { id: 'strategy', title: '1. אסטרטגיה ומטרות', icon: 'target' },
+                { id: 'data', title: '2. מודל הנתונים', icon: 'database' },
+                { id: 'process', title: '3. תהליך המכירה', icon: 'trending-up' },
+                { id: 'ecosystem', title: '4. אינטגרציות', icon: 'network' },
+                { id: 'automation', title: '5. אוטומציות', icon: 'bot' },
+                { id: 'insights', title: '6. דוחות ו-BI', icon: 'pie-chart' },
+                { id: 'budget', title: '7. תקציב ולו"ז', icon: 'shield' }
+            ],
+            userInput: { 
+                bizName: "", painPoint: "", budgetAmount: "", targetDate: "", 
+                pipelineStages: ['ליד חדש', 'ניסיון יצירת קשר', 'פגישה/דמו', 'הצעת מחיר', 'משא ומתן', 'סגירה (Won)'], 
+                dataModel: [ 
+                    { id: 1, name: 'לידים (Leads)', fields: ['שם מלא', 'טלפון', 'אימייל', 'מקור הגעה', 'סטטוס'] }, 
+                    { id: 2, name: 'לקוחות (Contacts)', fields: ['שם מלא', 'חברה', 'תפקיד', 'טלפון'] } 
+                ], 
+                selectedKPIs: [], selectedIntegrations: [], automations: [], 
+                selectedReports: ['sales_funnel', 'sales_forecast', 'mkt_source', 'srv_volume'], 
+                hasDiscount: false, discountType: 'ff', discountLabel: 'הנחה מיוחדת', discountAmount: '1000',
+                hasSupportBenefit: false 
+            }
+        };
+
+        // --- INITIALIZATION ---
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                const mainApp = document.getElementById('main-app-wrapper');
+                
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    mainApp.style.opacity = '1';
+                    mainApp.style.transition = 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+                    
+                    // Initialize after loading
+                    initializeApp();
+                }, 800);
+            }, 2000);
+        });
+
+        function initializeApp() {
+            lucide.createIcons();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewId = urlParams.get('viewProposal');
+
+            if (viewId) {
+                initClientMode(viewId);
+            } else {
+                initAdminMode();
+            }
+        }
+
+        function initAdminMode() {
+            renderNav();
+            renderSection('strategy');
+            
+            // Health Check for API
+            fetch(API_URL)
+                .then(() => {
+                    document.getElementById('connection-status').className = 'w-2 h-2 rounded-full bg-green-500';
+                    document.getElementById('connection-text').innerText = 'Connected';
+                })
+                .catch(() => {
+                    document.getElementById('connection-status').className = 'w-2 h-2 rounded-full bg-red-500';
+                    document.getElementById('connection-text').innerText = 'Offline';
+                });
+        }
+
+        async function initClientMode(id) {
+            document.getElementById('main-app-wrapper').style.display = 'none';
+            const container = document.getElementById('client-view-container');
+            container.classList.remove('hidden');
+            document.body.style.overflow = 'auto'; 
+
+            container.innerHTML = '<div class="text-center text-white mt-20 text-xl">טוען הצעה...</div>';
+
+            try {
+                const res = await fetch(`${API_URL}/${id}`);
+                if (!res.ok) throw new Error('Not found');
+                const proposal = await res.json();
+                
+                window.appData = proposal.appData;
+                window.currentProposalId = proposal._id;
+
+                const htmlContent = getProposalHTMLString(true);
+                
+                container.innerHTML = `
+                    <div class="max-w-4xl mx-auto bg-[#020617] mb-20 shadow-2xl">
+                        ${htmlContent}
+                    </div>
+                `;
+
+                if (proposal.status === 'signed') {
+                    showSignedState(proposal);
+                } else {
+                    setupSignaturePad();
+                }
+
+            } catch (e) {
+                container.innerHTML = '<div class="text-center text-red-400 mt-20 text-xl">שגיאה: ההצעה לא נמצאה או הוסרה.</div>';
+            }
+        }
+
+        // --- RENDER SECTIONS ---
+        
+        window.renderNav = () => {
+            const navList = document.getElementById('nav-list'); 
+            const mobileNav = document.getElementById('mobile-nav'); 
+            navList.innerHTML = ''; mobileNav.innerHTML = '';
+            
+            window.appData.sections.forEach(section => {
+                const activeClass = section.id === window.appData.currentSection ? 'active' : '';
+                
+                // Desktop
+                const li = document.createElement('li'); 
+                li.className = `nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-sm ${activeClass}`; 
+                li.innerHTML = `<i data-lucide="${section.icon}" class="w-4 h-4"></i> <span>${section.title}</span>`; 
+                li.onclick = () => renderSection(section.id); 
+                navList.appendChild(li);
+                
+                // Mobile
+                const btn = document.createElement('button'); 
+                btn.className = `flex-none px-4 py-2 rounded-full text-xs font-bold border transition whitespace-nowrap ${section.id === window.appData.currentSection ? 'bg-[#38bdf8] text-black border-[#38bdf8]' : 'bg-transparent text-white border-white/20'}`; 
+                btn.innerHTML = `${section.title.split('. ')[1]}`; 
+                btn.onclick = () => renderSection(section.id); 
+                mobileNav.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        window.renderSection = (id) => {
+            window.appData.currentSection = id;
+            renderNav(); 
+            
+            const container = document.getElementById('main-content'); 
+            container.innerHTML = '';
+            
+            const sectionInfo = window.appData.sections.find(s => s.id === id);
+            const header = document.createElement('div'); 
+            header.className = "mb-10 animate-fade-in"; 
+            header.innerHTML = `<div class="flex items-center gap-4 mb-2"><h2 class="text-2xl md:text-3xl font-black text-white tracking-wide">${sectionInfo.title}</h2><div class="h-px bg-gradient-to-r from-[#38bdf8] to-transparent flex-1 opacity-50"></div></div><p class="text-gray-400 text-sm max-w-2xl">כלי עזר להגדרת ${sectionInfo.title.split('. ')[1]}.</p>`; 
+            container.appendChild(header);
+            
+            const contentDiv = document.createElement('div'); 
+            contentDiv.className = "animate-slide-up"; 
+            container.appendChild(contentDiv);
+
+            switch(id) {
+                case 'strategy': renderStrategy(contentDiv); break;
+                case 'data': renderDataModel(contentDiv); break;
+                case 'process': renderProcess(contentDiv); break;
+                case 'ecosystem': renderEcosystem(contentDiv); break;
+                case 'automation': renderAutomation(contentDiv); break;
+                case 'insights': renderInsights(contentDiv); break;
+                case 'budget': renderBudget(contentDiv); break;
+            }
+            
+            renderNavigationFooter(container, id);
+            lucide.createIcons();
+        }
+
+        function renderNavigationFooter(container, currentId) {
+            const idx = window.appData.sections.findIndex(s => s.id === currentId);
+            const footer = document.createElement('div'); 
+            footer.className = "mt-12 flex flex-col md:flex-row justify-end border-t border-white/5 pt-6 gap-4";
+            
+            if (idx < window.appData.sections.length - 1) { 
+                const next = window.appData.sections[idx + 1]; 
+                footer.innerHTML = `<button onclick="saveAndNext('${next.id}')" class="btn-primary px-8 py-3 rounded-xl flex items-center justify-center gap-3 shadow-lg hover:shadow-cyan-500/20 transition-all text-sm w-full md:w-auto"><span>שמור והמשך ל-${next.title.split('. ')[1]}</span><i data-lucide="arrow-left" class="w-4 h-4"></i></button>`; 
+            } else { 
+                footer.innerHTML = `<button onclick="downloadSummary()" class="btn-primary px-8 py-3 rounded-xl flex items-center justify-center gap-3 shadow-lg hover:shadow-lime-500/20 transition-all text-sm w-full md:w-auto"><i data-lucide="file-code" class="w-4 h-4"></i><span>סיים והורד HTML</span></button>`; 
+            }
+            container.appendChild(footer);
+        }
+
+        // --- SECTION RENDERS ---
+
+        function renderStrategy(container) {
+            const goals = ['סדר וארגון בנתונים', 'חיסכון בזמן תפעולי', 'שקיפות ודוחות למנכ"ל', 'שימור ידע ארגוני', 'שיפור אחוזי המרה'];
+            const selected = window.appData.userInput.selectedKPIs || [];
+            container.innerHTML = `<div class="grid md:grid-cols-2 gap-8"><div class="glass-card p-6 md:p-8 space-y-6"><div><label class="block text-xs font-bold text-[#38bdf8] mb-2 uppercase tracking-wider">שם הלקוח</label><input type="text" placeholder="שם העסק..." value="${sanitize(window.appData.userInput.bizName)}" oninput="updateInput('bizName', this.value)" class="w-full p-3 bg-black/20 border border-white/10 rounded-lg text-lg text-white focus:border-[#38bdf8] outline-none"></div><div><label class="block text-xs font-bold text-[#a3e635] mb-2 uppercase tracking-wider">האתגר המרכזי</label><textarea rows="6" placeholder="מה הבעיה שרוצים לפתור?" oninput="updateInput('painPoint', this.value)" class="w-full p-3 bg-black/20 border border-white/10 rounded-lg text-gray-300 focus:border-[#a3e635] outline-none resize-none">${sanitize(window.appData.userInput.painPoint)}</textarea></div></div><div class="bg-gradient-to-br from-[#38bdf8]/10 to-[#a3e635]/5 border border-[#38bdf8]/20 p-6 md:p-8 rounded-xl"><h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-white"><i data-lucide="check-circle" class="text-[#38bdf8]"></i> מטרות על (KPIs)</h3><div class="space-y-4">${goals.map(goal => `<label class="flex items-center gap-3 p-3 bg-black/20 border border-white/5 rounded-lg cursor-pointer hover:border-[#38bdf8]/50 transition"><input type="checkbox" onchange="toggleKPI('${goal}')" ${selected.includes(goal) ? 'checked' : ''} class="w-4 h-4 accent-[#38bdf8] bg-transparent"><span class="font-medium text-sm text-gray-300">${goal}</span></label>`).join('')}</div></div></div>`;
+        }
+
+        function renderDataModel(container) {
+            let html = `<div class="grid md:grid-cols-2 gap-6">`;
+            window.appData.userInput.dataModel.forEach((entity, idx) => {
+                html += `<div class="glass-card p-6 border-t-4 border-t-[#38bdf8]"><div class="flex justify-between items-center mb-2"><input type="text" value="${sanitize(entity.name)}" oninput="updateEntityName(${idx}, this.value)" class="font-bold text-lg bg-transparent border-none text-white w-full focus:ring-0 p-0"><button onclick="removeEntity(${idx})" class="text-gray-600 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div><ul class="text-sm text-gray-400 space-y-1 list-disc pl-4">${entity.fields.map((f, fIdx) => `<li class="flex justify-between group"><span>${sanitize(f)}</span><button onclick="removeField(${idx}, ${fIdx})" class="opacity-0 group-hover:opacity-100 text-red-400 text-xs">x</button></li>`).join('')}</ul><div class="mt-4 flex gap-2"><input type="text" id="new-field-${idx}" placeholder="שדה חדש..." class="w-full text-xs p-2 bg-black/20 border border-white/10 rounded"><button onclick="addField(${idx}, document.getElementById('new-field-${idx}').value)" class="text-[#38bdf8] hover:bg-[#38bdf8]/10 p-2 rounded"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div>`;
+            });
+            html += `<button onclick="addEntity()" class="glass-card p-6 flex flex-col items-center justify-center border-dashed text-gray-500 hover:text-[#38bdf8] hover:border-[#38bdf8] transition cursor-pointer"><i data-lucide="plus-circle" class="w-8 h-8 mb-2"></i><span>הוסף טבלה חדשה</span></button></div>`;
+            html += `<div class="mt-8 border-t border-white/10 pt-6"><h4 class="font-bold text-gray-400 mb-4 flex items-center gap-2 text-sm"><i data-lucide="layout-template" class="w-4 h-4 text-[#a3e635]"></i> תבניות מהירות</h4><div class="flex flex-wrap gap-3">${entityTemplates.map((t, idx) => `<button onclick="addEntityFromTemplate(${idx})" class="px-4 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-[#22E4FA]/10 hover:border-[#22E4FA] hover:text-[#22E4FA] text-xs text-gray-300 transition">+ ${sanitize(t.name.split(' ')[0])}</button>`).join('')}</div></div>`;
+            container.innerHTML = html;
+        }
+
+        function renderProcess(container) {
+            container.innerHTML = `<div class="space-y-8"><div class="glass-card p-6"><h3 class="font-bold mb-4">שלבי המכירה (Pipeline)</h3><div class="flex flex-wrap gap-2">${window.appData.userInput.pipelineStages.map((s, i) => `<input type="text" value="${s}" onchange="updatePipeline(${i}, this.value)" class="step-arrow">`).join('')}<button onclick="addPipelineStep()" class="step-arrow border-dashed border-white/20 hover:border-[#38bdf8]">+ הוסף</button></div></div></div>`;
+        }
+
+        function renderEcosystem(container) {
+            const integrations = ['Gmail / Outlook', 'WhatsApp API', 'Facebook Lead Ads', 'Website Forms', 'Zapier / Make', 'Invoicing System', 'Monday.com', 'Slack'];
+            const selected = window.appData.userInput.selectedIntegrations || [];
+            container.innerHTML = `<div class="grid grid-cols-2 md:grid-cols-4 gap-4">${integrations.map(tool => { const isSelected = selected.includes(tool); return `<div onclick="toggleIntegration('${tool}')" class="glass-card p-4 flex flex-col items-center gap-2 cursor-pointer transition ${isSelected ? 'border-[#38bdf8] bg-[#38bdf8]/10' : 'hover:bg-white/5'}"><i data-lucide="plug" class="w-6 h-6 ${isSelected ? 'text-[#38bdf8]' : 'text-gray-500'}"></i><span class="text-sm ${isSelected ? 'text-white' : 'text-gray-400'} text-center">${tool}</span></div>`; }).join('')}</div>`;
+        }
+
+        function renderAutomation(container) {
+            const autos = window.appData.userInput.automations || [];
+            let html = `<div class="space-y-4 mb-8">
+                ${autos.map((auto, idx) => `
+                    <div class="glass-card p-4 flex flex-col md:flex-row gap-4 items-center animate-slide-up">
+                        <input type="text" value="${sanitize(auto.trigger)}" oninput="updateAuto(${idx}, 'trigger', this.value)" placeholder="כאשר..." class="w-full md:w-1/3 bg-transparent border-b border-gray-600 focus:border-[#38bdf8] transition-colors">
+                        <i data-lucide="arrow-down" class="text-gray-500 md:hidden"></i>
+                        <i data-lucide="arrow-left" class="text-gray-500 hidden md:block"></i>
+                        <input type="text" value="${sanitize(auto.action)}" oninput="updateAuto(${idx}, 'action', this.value)" placeholder="אז בצע..." class="w-full md:flex-1 bg-transparent border-b border-gray-600 focus:border-[#a3e635] transition-colors">
+                        <button onclick="removeAuto(${idx})" class="text-red-400 self-end md:self-center hover:bg-red-500/10 p-2 rounded transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>`).join('')}
+                <button onclick="addAuto()" class="w-full py-3 border border-dashed border-gray-600 rounded-xl text-gray-400 hover:text-[#38bdf8] hover:border-[#38bdf8] transition flex items-center justify-center gap-2 group">
+                    <div class="bg-gray-800 p-1 rounded group-hover:bg-[#38bdf8]/20 transition"><i data-lucide="plus" class="w-4 h-4"></i></div>
+                    <span>הוסף אוטומציה ריקה</span>
+                </button>
+            </div>
+            
+            <div class="border-t border-white/10 pt-6">
+                <h4 class="font-bold text-gray-400 mb-4 flex items-center gap-2 text-sm uppercase tracking-wider">
+                    <i data-lucide="zap" class="w-4 h-4 text-[#a3e635]"></i> תבניות אוטומציה מהירות
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    ${automationTemplates.map(t => `
+                        <button onclick="addAutoTemplate('${t.trigger}', '${t.action}')" class="text-right p-3 rounded-lg bg-white/5 border border-white/5 hover:border-[#38bdf8]/50 hover:bg-[#38bdf8]/5 transition group">
+                            <div class="text-[#38bdf8] font-bold text-xs mb-1 group-hover:text-white transition">${sanitize(t.name)}</div>
+                            <div class="text-[10px] text-gray-500 truncate">${sanitize(t.trigger)} >> ${sanitize(t.action)}</div>
+                        </button>
+                    `).join('')}
+                </div>
+            </div>`;
+            container.innerHTML = html;
+        }
+
+        function renderInsights(container) {
+            const selected = window.appData.userInput.selectedReports || [];
+            let html = `<div class="grid lg:grid-cols-12 gap-8"><div class="lg:col-span-4 h-auto md:h-[600px] overflow-y-auto pr-2 custom-scroll"><h3 class="font-bold text-gray-300 mb-4 flex items-center gap-2"><i data-lucide="list-checks" class="text-[#38bdf8]"></i> קטלוג דוחות</h3>`;
+            Object.keys(reportCatalog).forEach(cat => {
+                const title = cat === 'sales' ? 'מכירות' : cat === 'marketing' ? 'שיווק' : cat === 'service' ? 'שירות' : 'ניהול';
+                const color = cat === 'sales' ? 'text-blue-400' : cat === 'marketing' ? 'text-emerald-400' : cat === 'service' ? 'text-purple-400' : 'text-red-400';
+                html += `<div class="mb-6"><h4 class="font-bold text-sm mb-3 uppercase tracking-wider ${color}">${title}</h4><div class="space-y-2">${reportCatalog[cat].map(r => `<label class="flex items-start gap-3 p-3 bg-white/5 rounded-lg cursor-pointer hover:bg-white/10 transition border border-transparent hover:border-white/10"><input type="checkbox" onchange="toggleReport('${r.id}')" ${selected.includes(r.id) ? 'checked' : ''} class="mt-1"><div class="flex-1"><div class="font-medium text-sm text-gray-200">${r.name}</div><div class="text-xs text-gray-500">${r.desc}</div></div></label>`).join('')}</div></div>`;
+            });
+            html += `</div><div class="lg:col-span-8"><h3 class="font-bold text-gray-300 mb-4 flex items-center gap-2"><i data-lucide="activity" class="text-[#a3e635]"></i> סימולציית דאשבורד</h3><div class="grid md:grid-cols-2 gap-4"><div class="glass-card p-4"><h5 class="text-xs font-bold text-gray-400 mb-2">משפך מכירות</h5><div class="h-40 relative"><canvas id="previewChart1"></canvas></div></div><div class="glass-card p-4"><h5 class="text-xs font-bold text-gray-400 mb-2">מקורות לידים</h5><div class="h-40 relative"><canvas id="previewChart2"></canvas></div></div><div class="glass-card p-4"><h5 class="text-xs font-bold text-gray-400 mb-2">סיבות לקריאות שירות</h5><div class="h-40 relative"><canvas id="previewChart3"></canvas></div></div><div class="glass-card p-4"><h5 class="text-xs font-bold text-gray-400 mb-2">הכנסות מול נטישה</h5><div class="h-40 relative"><canvas id="previewChart4"></canvas></div></div></div></div></div>`;
+            container.innerHTML = html;
+            setTimeout(initCharts, 100);
+        }
+
+        function renderBudget(container) {
+            const data = window.appData.userInput;
+            let discountOptionsHtml = '';
+            if (data.hasDiscount) {
+                discountOptionsHtml = `<div class="mt-6 animate-fade-in border-t border-white/10 pt-6"><label class="block text-xs font-bold text-[#38bdf8] mb-3 uppercase tracking-wider">סוג הנחה</label><div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">${discountOptions.map(opt => `<div onclick="setDiscountType('${opt.id}')" class="discount-option ${data.discountType === opt.id ? 'selected' : ''}">${opt.name}</div>`).join('')}</div><div class="flex gap-4"><div class="flex-1"><label class="block text-[10px] text-gray-500 mb-1">כותרת</label><input type="text" value="${sanitize(data.discountLabel)}" oninput="updateInput('discountLabel', this.value)" class="w-full p-2 bg-black/30 border border-white/10 rounded-lg text-sm"></div><div class="w-32"><label class="block text-[10px] text-gray-500 mb-1">סכום (₪)</label><input type="number" value="${sanitize(data.discountAmount)}" oninput="updateInput('discountAmount', this.value)" class="w-full p-2 bg-black/30 border border-white/10 rounded-lg text-sm text-[#38bdf8] font-bold"></div></div></div>`;
+            }
+            container.innerHTML = `<div class="glass-card p-8 border-t-4 border-t-[#a3e635] max-w-lg mx-auto"><h3 class="font-bold text-lg mb-6 text-white">תקציב ומשאבים</h3><div class="space-y-6"><div><label class="block text-xs font-bold text-gray-500 mb-1">תקציב הטמעה (לפני הנחה) ₪</label><input type="number" placeholder="0" class="w-full p-3 bg-black/30 border border-white/10 rounded-xl font-mono text-[#a3e635] text-lg focus:border-[#a3e635] outline-none" value="${data.budgetAmount}" onchange="updateInput('budgetAmount', this.value)"></div><div><label class="block text-xs font-bold text-gray-500 mb-1">תאריך יעד</label><input type="date" class="w-full p-3 bg-black/30 border border-white/10 rounded-xl text-white outline-none focus:border-[#a3e635]" value="${data.targetDate}" onchange="updateInput('targetDate', this.value)"></div><div class="flex items-center justify-between pt-4 border-t border-white/10"><span class="text-sm font-bold text-gray-300">האם לתת הנחה?</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" onchange="toggleDiscount(this.checked)" class="sr-only peer" ${data.hasDiscount ? 'checked' : ''}><div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#38bdf8]"></div></label></div>${discountOptionsHtml}
+            <div class="flex items-center justify-between pt-4 border-t border-white/10 mt-4">
+                <span class="text-sm font-bold text-gray-300">הטבת תמיכה ופיתוח (3 חודשים)</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" onchange="toggleSupportBenefit(this.checked)" class="sr-only peer" ${data.hasSupportBenefit ? 'checked' : ''}>
+                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#a3e635]"></div>
+                </label>
+            </div>
+            </div></div>`;
+        }
+
+        // --- DATA MANIPULATION FUNCTIONS ---
+        window.saveAndNext = (nextId) => { saveToLocal(); renderSection(nextId); document.getElementById('main-content').scrollTop = 0; };
+        window.saveToLocal = () => localStorage.setItem('advantage_crm_pro', JSON.stringify(window.appData));
+        window.sanitize = (str) => { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; };
+        function updateInput(key, val) { window.appData.userInput[key] = val; window.saveToLocal(); }
+        function toggleKPI(goal) { const i = window.appData.userInput.selectedKPIs.indexOf(goal); if(i===-1) window.appData.userInput.selectedKPIs.push(goal); else window.appData.userInput.selectedKPIs.splice(i,1); window.saveToLocal(); }
+        function addEntity() { window.appData.userInput.dataModel.push({ id: Date.now(), name: 'טבלה חדשה', fields: [] }); window.saveToLocal(); renderSection('data'); }
+        function addEntityFromTemplate(idx) { const t = entityTemplates[idx]; window.appData.userInput.dataModel.push({ id: Date.now(), name: t.name, fields: [...t.fields] }); window.saveToLocal(); renderSection('data'); }
+        function updateEntityName(idx, val) { window.appData.userInput.dataModel[idx].name = val; window.saveToLocal(); }
+        function addField(idx, val) { if(val) { window.appData.userInput.dataModel[idx].fields.push(val); window.saveToLocal(); renderSection('data'); } }
+        function removeField(eIdx, fIdx) { window.appData.userInput.dataModel[eIdx].fields.splice(fIdx, 1); window.saveToLocal(); renderSection('data'); }
+        function removeEntity(idx) { if(confirm('למחוק?')) { window.appData.userInput.dataModel.splice(idx, 1); window.saveToLocal(); renderSection('data'); } }
+        function updatePipeline(i, val) { window.appData.userInput.pipelineStages[i] = val; window.saveToLocal(); }
+        function addPipelineStep() { window.appData.userInput.pipelineStages.push('שלב חדש'); window.saveToLocal(); renderSection('process'); }
+        function toggleIntegration(tool) { const i = window.appData.userInput.selectedIntegrations.indexOf(tool); if(i===-1) window.appData.userInput.selectedIntegrations.push(tool); else window.appData.userInput.selectedIntegrations.splice(i,1); window.saveToLocal(); renderSection('ecosystem'); }
+        function addAuto() { window.appData.userInput.automations.push({trigger:'', action:''}); window.saveToLocal(); renderSection('automation'); }
+        function addAutoTemplate(trigger, action) { window.appData.userInput.automations.push({trigger, action}); window.saveToLocal(); renderSection('automation'); }
+        function removeAuto(idx) { window.appData.userInput.automations.splice(idx, 1); window.saveToLocal(); renderSection('automation'); }
+        function updateAuto(idx, key, val) { window.appData.userInput.automations[idx][key] = val; window.saveToLocal(); }
+        function toggleReport(id) { const list = window.appData.userInput.selectedReports; if(list.includes(id)) window.appData.userInput.selectedReports = list.filter(x => x !== id); else list.push(id); window.saveToLocal(); }
+        function toggleDiscount(isChecked) { window.appData.userInput.hasDiscount = isChecked; window.saveToLocal(); renderSection('budget'); }
+        function setDiscountType(id) { const opt = discountOptions.find(o => o.id === id); window.appData.userInput.discountType = id; window.appData.userInput.discountLabel = opt.label; window.appData.userInput.discountAmount = opt.defaultAmount; window.saveToLocal(); renderSection('budget'); }
+        function toggleSupportBenefit(isChecked) { window.appData.userInput.hasSupportBenefit = isChecked; window.saveToLocal(); renderSection('budget'); }
+
+        // --- STRESS TEST ---
+        window.simulateStressTest = () => {
+            if(!confirm('זהירות: פעולה זו תמחק את הנתונים הנוכחיים ותמלא את המערכת בנתוני הדגמה לבדיקה. להמשיך?')) return;
+            window.appData.userInput.bizName = "טכנולוגיות עתיד בע\"מ";
+            window.appData.userInput.painPoint = "חוסר סנכרון בין המחלקות השונות, איבוד לידים, וזמן רב שמתבזבז על עבודה ידנית.";
+            window.appData.userInput.budgetAmount = "45000";
+            window.appData.userInput.targetDate = new Date().toISOString().split('T')[0];
+            window.appData.userInput.pipelineStages = ['פנייה ראשונית', 'סינון', 'פגישת אפיון', 'הצעת מחיר', 'משא ומתן', 'חתימה', 'העברה לביצוע'];
+            window.appData.userInput.selectedIntegrations = ['Gmail / Outlook', 'WhatsApp API', 'Monday.com', 'Slack'];
+            window.appData.userInput.selectedKPIs = ['סדר וארגון בנתונים', 'חיסכון בזמן תפעולי', 'שיפור אחוזי המרה'];
+            window.appData.userInput.automations = [
+                {trigger: 'ליד חדש נכנס', action: 'שלח הודעת וואטסאפ אוטומטית + פתח משימה'},
+                {trigger: 'הצעת מחיר נשלחה', action: 'צור תזכורת מעקב לעוד 3 ימים'},
+                {trigger: 'סטטוס עסקה שונה ל-Won', action: 'שלח מייל ברכה ללקוח + עדכן במאנדיי'}
+            ];
+            window.appData.userInput.hasDiscount = true;
+            window.appData.userInput.discountAmount = "2500";
+            window.appData.userInput.hasSupportBenefit = true;
+            
+            window.appData.userInput.dataModel = [entityTemplates[0], entityTemplates[1], entityTemplates[3], entityTemplates[8]];
+            
+            saveToLocal();
+            renderNav();
+            renderSection(window.appData.currentSection);
+            alert('נתוני בדיקה נטענו בהצלחה!');
+        }
+
+        // --- CHARTS ---
+        window.initCharts = () => {
+            ['previewChart1', 'previewChart2', 'previewChart3', 'previewChart4'].forEach(id => { 
+                if(!document.getElementById(id)) return;
+                const c = Chart.getChart(id); 
+                if (c) c.destroy(); 
+            });
+            
+            const ctx1 = document.getElementById('previewChart1');
+            if (ctx1) new Chart(ctx1, { type: 'bar', data: { labels: window.appData.userInput.pipelineStages.slice(0, 5), datasets: [{ label: 'עסקאות', data: [120, 80, 60, 40, 25], backgroundColor: '#38bdf8', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { ticks: { color: '#94a3b8', font: {size: 10} } } } } });
+            
+            const ctx2 = document.getElementById('previewChart2');
+            if (ctx2) new Chart(ctx2, { type: 'doughnut', data: { labels: ['פייסבוק', 'גוגל', 'פה לאוזן', 'לינקדאין'], datasets: [{ data: [35, 25, 25, 15], backgroundColor: ['#38bdf8', '#a3e635', '#f472b6', '#fbbf24'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#fff', font: {size: 10} } } } } });
+            
+            const ctx3 = document.getElementById('previewChart3');
+            if (ctx3) new Chart(ctx3, { type: 'radar', data: { labels: ['באגים', 'חשבוניות', 'התחברות', 'פיצ\'רים', 'אחר'], datasets: [{ label: 'קריאות', data: [65, 59, 90, 81, 56], fill: true, backgroundColor: 'rgba(56, 189, 248, 0.2)', borderColor: '#38bdf8', pointBackgroundColor: '#38bdf8' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { r: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { display: false } } }, plugins: { legend: { display: false } } } });
+            
+            const ctx4 = document.getElementById('previewChart4');
+            if (ctx4) new Chart(ctx4, { type: 'line', data: { labels: ['ינו', 'פבר', 'מרץ', 'אפר', 'מאי', 'יוני'], datasets: [{ label: 'הכנסות', data: [65, 59, 80, 81, 56, 95], borderColor: '#a3e635', tension: 0.4 }, { label: 'נטישה', data: [10, 12, 8, 5, 6, 4], borderColor: '#f87171', tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff', boxWidth: 10 } } }, scales: { y: { display: false }, x: { ticks: { color: '#94a3b8' } } } } });
+        };
+
+        // --- NETLIFY / SERVER ACTIONS ---
+        
+        window.saveToCloud = async () => {
+            const btn = document.querySelector('button[onclick="saveToCloud()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> שומר...`;
+            btn.disabled = true;
+            
+            const payload = {
+                _id: window.currentProposalId, 
+                title: window.appData.userInput.bizName || 'טיוטה ללא שם',
+                budget: parseInt(window.appData.userInput.budgetAmount || 0),
+                clientName: window.appData.userInput.bizName,
+                appData: window.appData
+            };
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if(!res.ok) throw new Error('Network response was not ok');
+                const saved = await res.json();
+                window.currentProposalId = saved._id;
+                alert('ההצעה נשמרה בענן בהצלחה!');
+            } catch (e) {
+                console.error(e);
+                alert('שגיאה בתקשורת עם השרת. וודא שהשרת פעיל (בסביבה מקומית או ב-Netlify).');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
+
+        window.openHistory = async () => {
+            document.getElementById('history-modal').classList.add('open');
+            const list = document.getElementById('history-list');
+            list.innerHTML = '<div class="text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin"></i> טוען נתונים...</div>';
+            
+            try {
+                const res = await fetch(API_URL);
+                const proposals = await res.json();
+                
+                if(proposals.length === 0) { list.innerHTML = '<div class="text-center text-gray-500">אין הצעות שמורות בשרת</div>'; return; }
+
+                list.innerHTML = `<div class="space-y-3">${proposals.map(p => {
+                    const isSigned = p.status === 'signed';
+                    const link = `${window.location.origin}/?viewProposal=${p._id}`;
+                    
+                    return `<div class="p-4 rounded-xl bg-white/5 border ${isSigned ? 'border-green-500/30' : 'border-white/10'} hover:border-[#38bdf8] transition flex flex-col gap-3">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-bold text-white text-lg">${sanitize(p.title)}</div>
+                                <div class="text-xs text-gray-400 mt-1 flex gap-3">
+                                    <span>${new Date(p.createdAt).toLocaleDateString('he-IL')}</span>
+                                    <span>₪${p.budget?.toLocaleString() || 0}</span>
+                                    ${isSigned ? '<span class="text-green-400 font-bold">✓ נחתם</span>' : '<span class="text-gray-500">טיוטה</span>'}
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="loadProposal('${p._id}')" class="p-2 bg-[#38bdf8]/10 text-[#38bdf8] rounded hover:bg-[#38bdf8]/20" title="ערוך"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                                <button onclick="deleteProposal('${p._id}')" class="p-2 bg-red-500/10 text-red-400 rounded hover:bg-red-500/20" title="מחק"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t border-white/5 flex gap-2">
+                             <input type="text" value="${link}" readonly class="bg-black/30 text-xs text-gray-500 p-2 rounded flex-1 outline-none border border-white/10 focus:border-[#38bdf8]" onclick="this.select()">
+                             <button onclick="navigator.clipboard.writeText('${link}'); alert('הלינק הועתק!')" class="text-xs bg-[#a3e635]/10 text-[#a3e635] px-3 rounded hover:bg-[#a3e635]/20 border border-[#a3e635]/20 whitespace-nowrap">העתק לינק ללקוח</button>
+                             ${isSigned ? `<button onclick="viewSignature('${p.signatureImage}', '${sanitize(p.clientNotes || '')}')" class="text-xs bg-green-500/10 text-green-400 px-3 rounded border border-green-500/20 whitespace-nowrap">הצג חתימה</button>` : ''}
+                        </div>
+                    </div>`;
+                }).join('')}</div>`;
+                lucide.createIcons();
+            } catch (e) { list.innerHTML = '<div class="text-center text-red-400">שגיאה בטעינת נתונים מהשרת (האם הוא רץ?)</div>'; }
+        };
+
+        window.loadProposal = async (id) => {
+            try {
+                const res = await fetch(`${API_URL}/${id}`);
+                const p = await res.json();
+                window.appData = p.appData;
+                window.currentProposalId = p._id;
+                document.getElementById('history-modal').classList.remove('open');
+                renderNav(); renderSection(window.appData.currentSection);
+                alert('הנתונים נטענו בהצלחה!');
+            } catch(e) { alert('שגיאה בטעינה'); }
+        };
+
+        window.deleteProposal = async (id) => {
+            if(!confirm('למחוק לצמיתות מהשרת?')) return;
+            await fetch(`${API_URL}/${id}`, {method:'DELETE'});
+            openHistory();
+        };
+
+        window.viewSignature = (img, notes) => {
+            const w = window.open("");
+            w.document.write(`<body style="background:#111; color:white; font-family:sans-serif; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh;">
+                <h2 style="margin-bottom:20px;">חתימת לקוח</h2>
+                <img src="${img}" style="border:1px solid #444; background:white; padding:20px; border-radius:10px; max-width:80%; box-shadow:0 0 20px rgba(255,255,255,0.1);">
+                <p style="margin-top:20px; color:#aaa;">הערות: ${notes || 'אין'}</p>
+            </body>`);
+        };
+
+        // --- CLIENT SIGNING LOGIC ---
+        let sigCanvas, sigCtx, isSigDrawing = false;
+
+        window.setupSignaturePad = () => {
+            sigCanvas = document.getElementById('signature-pad');
+            if(!sigCanvas) return;
+            sigCtx = sigCanvas.getContext('2d');
+            
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            sigCanvas.width = sigCanvas.offsetWidth * ratio;
+            sigCanvas.height = sigCanvas.offsetHeight * ratio;
+            sigCtx.scale(ratio, ratio);
+            
+            sigCtx.strokeStyle = "#38bdf8"; 
+            sigCtx.lineWidth = 2;
+
+            const getPos = (e) => {
+                const rect = sigCanvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                return {x,y};
+            }
+
+            sigCanvas.addEventListener('mousedown', e => { isSigDrawing=true; sigCtx.beginPath(); sigCtx.moveTo(getPos(e).x, getPos(e).y); });
+            sigCanvas.addEventListener('mousemove', e => { if(!isSigDrawing)return; sigCtx.lineTo(getPos(e).x, getPos(e).y); sigCtx.stroke(); });
+            window.addEventListener('mouseup', () => isSigDrawing=false);
+            
+            sigCanvas.addEventListener('touchstart', e => { e.preventDefault(); isSigDrawing=true; sigCtx.beginPath(); sigCtx.moveTo(getPos(e).x, getPos(e).y); });
+            sigCanvas.addEventListener('touchmove', e => { e.preventDefault(); if(!isSigDrawing)return; sigCtx.lineTo(getPos(e).x, getPos(e).y); sigCtx.stroke(); });
+            window.addEventListener('touchend', () => isSigDrawing=false);
+        };
+
+        window.clearSig = () => {
+            sigCtx.clearRect(0,0, sigCanvas.width, sigCanvas.height);
+        };
+
+        window.submitSignature = async () => {
+            const name = document.getElementById('signName').value;
+            if(!name) return alert('נא למלא שם מלא לחתימה');
+            
+            const btn = document.querySelector('button[onclick="submitSignature()"]');
+            btn.innerHTML = 'שולח חתימה...'; btn.disabled = true;
+
+            try {
+                const dataUrl = sigCanvas.toDataURL('image/png', 0.5);
+                
+                const res = await fetch(`${API_URL}/${window.currentProposalId}/sign`, {
+                    method: 'PATCH',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        clientName: name,
+                        clientNotes: document.getElementById('clientNotes').value,
+                        signatureImage: dataUrl
+                    })
+                });
+                
+                if(res.ok) {
+                    const p = await res.json();
+                    showSignedState(p);
+                    alert('החתימה נקלטה בהצלחה!');
+                } else throw new Error();
+            } catch(e) {
+                alert('שגיאה בשליחת החתימה. נסה שוב.');
+                btn.innerHTML = 'אשר וחתום דיגיטלית'; btn.disabled = false;
+            }
+        };
+
+        function showSignedState(proposal) {
+            const section = document.getElementById('sig-section');
+            if(section) {
+                section.innerHTML = `
+                    <div class="text-center py-10">
+                        <div class="text-green-500 text-6xl mb-4">✓</div>
+                        <h2 class="text-2xl font-bold text-white">המסמך נחתם ואושר</h2>
+                        <p class="text-gray-400 mt-2">נחתם ע"י ${sanitize(proposal.clientName)} בתאריך ${new Date(proposal.signedAt).toLocaleString()}</p>
+                        <img src="${proposal.signatureImage}" class="mx-auto mt-6 border border-white/20 rounded p-4 bg-white/5 max-h-40">
+                    </div>
+                `;
+            }
+        }
+
+        // --- HTML GENERATOR FOR VIEW/DOWNLOAD ---
+        function getProposalHTMLString(isClientView = false) {
+            const d = window.appData.userInput;
+            const biz = d.bizName || 'לקוח';
+            const total = parseInt(d.budgetAmount || 0) - (d.hasDiscount ? parseInt(d.discountAmount||0) : 0);
+            
+            let signatureBlock = '';
+            if (isClientView) {
+                signatureBlock = `
+                <div class="mt-12 bg-[#0f172a] p-8 rounded-xl border border-gray-800" id="sig-section">
+                    <div class="text-sm font-bold text-gray-400 mb-6 uppercase tracking-widest border-b border-gray-800 pb-2">אישור והתנעה</div>
+                    <div class="bg-[#1e293b]/50 border border-gray-700 p-6 rounded-xl mb-8">
+                        <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-2">הערות</label><textarea id="clientNotes" class="w-full bg-transparent border-b border-gray-600 text-white h-20 p-2"></textarea></div>
+                        <div class="mb-4"><label class="block text-xs font-bold text-gray-500 mb-2">שם מלא</label><input type="text" id="signName" class="w-full bg-transparent border-b border-gray-600 text-white text-lg p-2"></div>
+                        <div id="pad-container" class="mb-4">
+                            <label class="block text-xs font-bold text-gray-500 mb-2">חתימה</label>
+                            <canvas id="signature-pad" class="w-full bg-white/5 border border-dashed border-gray-600 rounded cursor-crosshair h-40"></canvas>
+                            <button onclick="clearSig()" class="text-xs text-red-400 mt-2">נקה</button>
+                        </div>
+                        <button onclick="submitSignature()" class="mt-6 w-full bg-gradient-to-r from-[#38bdf8] to-[#a3e635] text-[#020617] font-bold py-4 rounded-xl shadow-lg hover:scale-105 transition">אשר וחתום דיגיטלית</button>
+                    </div>
+                </div>`;
+            }
+
+            const dataModelHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${d.dataModel.map(m => `
+                <div class="p-6 bg-[#1e293b]/40 rounded-xl border border-white/5">
+                    <div class="font-bold text-[#38bdf8] text-lg mb-2"><i class="fa-solid fa-database opacity-70"></i> ${sanitize(m.name)}</div>
+                    <div class="text-sm text-gray-400">${m.fields.join(' • ')}</div>
+                </div>`).join('')}</div>`;
+
+            const kpiHtml = d.selectedKPIs && d.selectedKPIs.length > 0 ? 
+                `<div class="bg-[#1e293b]/40 p-6 rounded-xl border border-white/5 mb-8">
+                    <h3 class="text-[#a3e635] font-bold mb-4 uppercase tracking-wider text-xs">מטרות העל (KPIs)</h3>
+                    <ul class="space-y-2">${d.selectedKPIs.map(k => `<li class="flex items-center gap-2 text-gray-300 text-sm"><span class="text-[#a3e635]">•</span> ${sanitize(k)}</li>`).join('')}</ul>
+                </div>` : '';
+
+            const pipelineHtml = d.pipelineStages.length > 0 ? 
+                `<div class="flex flex-wrap gap-4 mt-4">${d.pipelineStages.map((s,i) => `<div class="flex items-center gap-2"><div class="w-8 h-8 rounded-full bg-[#38bdf8]/20 text-[#38bdf8] flex items-center justify-center font-bold text-sm">${i+1}</div><div class="text-gray-300 text-sm">${sanitize(s)}</div></div>`).join('<div class="text-gray-600"><i class="fa-solid fa-arrow-left"></i></div>')}</div>` 
+                : '';
+
+            const integrationsHtml = d.selectedIntegrations && d.selectedIntegrations.length > 0 ? 
+                `<div class="bg-[#1e293b]/20 p-6 rounded-xl border border-white/5 mb-4">
+                    <h4 class="font-bold text-white mb-4">אינטגרציות וחיבורים</h4>
+                    <div class="flex flex-wrap gap-2">${d.selectedIntegrations.map(t => `<span class="px-3 py-1 bg-white/5 rounded text-xs text-[#38bdf8] border border-white/10">${sanitize(t)}</span>`).join('')}</div>
+                </div>` : '';
+
+            const autosHtml = d.automations.length > 0 ? 
+                `<div class="grid md:grid-cols-2 gap-4 mt-4">${d.automations.map(a => `<div class="bg-[#1e293b]/30 p-4 rounded border border-white/5"><div class="text-xs text-[#38bdf8] font-bold">IF</div><div class="text-sm text-white mb-2">${sanitize(a.trigger)}</div><div class="text-xs text-[#a3e635] font-bold">THEN</div><div class="text-sm text-white">${sanitize(a.action)}</div></div>`).join('')}</div>`
+                : '<div class="text-gray-500 text-sm">אין אוטומציות מוגדרות</div>';
+
+            const reportCatalogFlat = [ ...reportCatalog.sales, ...reportCatalog.marketing, ...reportCatalog.service, ...reportCatalog.management ];
+            const selectedReportIds = d.selectedReports || [];
+            const selectedReportsObjects = selectedReportIds.map(id => reportCatalogFlat.find(r => r.id === id)).filter(Boolean);
+            const reportsHtml = selectedReportsObjects.length > 0 ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">${selectedReportsObjects.map(r => `<div class="flex items-start gap-3 p-3 bg-white/5 rounded-lg border border-white/5"><div class="mt-1"><i class="fa-solid fa-chart-pie text-[#a3e635]"></i></div><div><div class="font-bold text-sm text-gray-200">${window.sanitize(r.name)}</div><div class="text-xs text-gray-500">${window.sanitize(r.desc)}</div></div></div>`).join('')}</div>` : '';
+
+            const timelineHtml = `<div class="space-y-6 border-r border-gray-700 mr-4 pr-6 mt-6"><div class="relative"><div class="absolute -right-[29px] top-0 w-4 h-4 rounded-full bg-[#38bdf8] right-[-9px]"></div><h4 class="text-[#38bdf8] font-bold">שבוע 1-2: אפיון</h4><p class="text-gray-400 text-sm">מיפוי צרכים והגדרת מסע לקוח.</p></div><div class="relative"><div class="absolute -right-[29px] top-0 w-4 h-4 rounded-full bg-[#38bdf8] right-[-9px]"></div><h4 class="text-[#38bdf8] font-bold">שבוע 3-4: פיתוח</h4><p class="text-gray-400 text-sm">הקמת סביבה, שדות ואוטומציות.</p></div><div class="relative"><div class="absolute -right-[29px] top-0 w-4 h-4 rounded-full bg-[#38bdf8] right-[-9px]"></div><h4 class="text-[#38bdf8] font-bold">שבוע 5: מיגרציה</h4><p class="text-gray-400 text-sm">ייבוא נתונים ובדיקות.</p></div><div class="relative"><div class="absolute -right-[29px] top-0 w-4 h-4 rounded-full bg-[#38bdf8] right-[-9px]"></div><h4 class="text-[#38bdf8] font-bold">שבוע 6: עלייה לאוויר</h4><p class="text-gray-400 text-sm">הדרכות ומסירה.</p></div></div>`;
+
+            const supportBenefitHtml = d.hasSupportBenefit ? 
+                `<div class="flex justify-between items-center py-4 border-b border-gray-700/50">
+                    <div>
+                        <div class="text-white font-bold text-lg">🎁 חבילת Premium Care (מתנה)</div>
+                        <div class="text-sm text-gray-500 mt-1">3 חודשים תמיכה טכנית מלאה + פיתוח פיצ'ר נוסף אחד בחודש.</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[#a3e635] font-bold text-lg">ללא עלות</div>
+                        <div class="text-xs text-gray-500 line-through">₪2,700</div>
+                    </div>
+                </div>` : '';
+
+            return `
+            <div class="font-sans text-white p-4 md:p-8 max-w-[1000px] mx-auto bg-[#020617] text-right" dir="rtl">
+                <div class="text-center mb-12 border-b border-gray-800 pb-10">
+                    <img src="https://live.staticflickr.com/65535/55017651113_aec1078c9d_n.jpg" class="w-16 h-16 rounded-lg mx-auto mb-4 shadow-lg shadow-cyan-500/20">
+                    <h1 class="text-3xl md:text-4xl font-black mb-2 text-[#38bdf8]">הצעת מחיר: CRM Architect</h1>
+                    <div class="text-xl text-gray-400">עבור ${sanitize(biz)}</div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    <div class="bg-[#1e293b]/40 p-6 rounded-xl border border-white/5">
+                        <h3 class="text-[#38bdf8] font-bold mb-2 uppercase tracking-wider text-xs">האתגר העסקי</h3>
+                        <p class="text-gray-300 leading-relaxed">${sanitize(d.painPoint || 'טרם הוגדר')}</p>
+                    </div>
+                     <div class="bg-[#1e293b]/40 p-6 rounded-xl border border-white/5">
+                        <h3 class="text-[#a3e635] font-bold mb-2 uppercase tracking-wider text-xs">עלות השקעה</h3>
+                        <div class="text-4xl font-bold text-white">₪${total.toLocaleString()}</div>
+                        ${d.hasDiscount ? `<div class="text-sm text-gray-500 line-through mt-1">₪${parseInt(d.budgetAmount).toLocaleString()}</div><div class="text-xs text-[#38bdf8] mt-1">${sanitize(d.discountLabel)} (-₪${d.discountAmount})</div>` : ''}
+                    </div>
+                </div>
+
+                ${kpiHtml}
+
+                <div class="space-y-12">
+                     <section>
+                        <h3 class="text-2xl font-bold border-b border-gray-800 pb-4 mb-6 flex items-center gap-2"><span class="text-[#38bdf8]">01</span> מפרט המערכת</h3>
+                        ${dataModelHtml}
+                     </section>
+
+                     <section>
+                        <h3 class="text-2xl font-bold border-b border-gray-800 pb-4 mb-6 flex items-center gap-2"><span class="text-[#38bdf8]">02</span> טכנולוגיה ותהליכים</h3>
+                        ${integrationsHtml}
+                        <div class="bg-[#1e293b]/20 p-6 rounded-xl border border-white/5 mb-4">
+                            <h4 class="font-bold text-white mb-4">תהליך המכירה (Pipeline)</h4>
+                            ${pipelineHtml}
+                        </div>
+                        <div class="bg-[#1e293b]/20 p-6 rounded-xl border border-white/5">
+                            <h4 class="font-bold text-white mb-4">דוחות ו-BI</h4>
+                            ${reportsHtml}
+                        </div>
+                     </section>
+
+                     <section>
+                        <h3 class="text-2xl font-bold border-b border-gray-800 pb-4 mb-6 flex items-center gap-2"><span class="text-[#38bdf8]">03</span> אוטומציה ולו"ז</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-bold text-white mb-4">אוטומציות</h4>
+                                ${autosHtml}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white mb-4">אבני דרך</h4>
+                                ${timelineHtml}
+                            </div>
+                        </div>
+                     </section>
+
+                     <section>
+                        <h3 class="text-2xl font-bold border-b border-gray-800 pb-4 mb-6 flex items-center gap-2"><span class="text-[#38bdf8]">04</span> פירוט עלויות</h3>
+                        <div class="bg-[#1e293b]/40 rounded-xl border border-white/5 overflow-hidden">
+                            <div class="flex justify-between items-center p-4 border-b border-white/5 bg-white/5">
+                                <div class="text-sm font-bold text-gray-400 uppercase tracking-wider">תיאור</div>
+                                <div class="text-sm font-bold text-gray-400 uppercase tracking-wider">עלות</div>
+                            </div>
+                            <div class="p-6 space-y-4">
+                                <div class="flex justify-between items-center py-4 border-b border-gray-700/50">
+                                    <div>
+                                        <div class="text-white font-bold text-lg">חבילת CRM ARCHITECT מלאה</div>
+                                        <div class="text-sm text-gray-500 mt-1">אפיון, פיתוח, הטמעה, רישיונות שימוש (ללא הגבלה).</div>
+                                    </div>
+                                    <div class="text-xl text-gray-200">₪${parseInt(d.budgetAmount || 0).toLocaleString()}</div>
+                                </div>
+                                ${supportBenefitHtml}
+                                ${d.hasDiscount ? `<div class="flex justify-between items-center py-4 border-b border-gray-700/50">
+                                    <div class="text-[#38bdf8] font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-gift"></i> ${sanitize(d.discountLabel)}</div>
+                                    <div class="text-[#38bdf8] font-bold text-lg">-₪${parseInt(d.discountAmount).toLocaleString()}</div>
+                                </div>` : ''}
+                                <div class="flex justify-between items-center pt-4">
+                                    <div class="text-gray-400">סה"כ לתשלום (לא כולל מע"מ)</div>
+                                    <div class="text-3xl font-black text-white">₪${total.toLocaleString()}</div>
+                                </div>
+                            </div>
+                        </div>
+                     </section>
+                </div>
+
+                ${signatureBlock}
+
+                <div class="text-center text-xs text-gray-600 mt-20 pt-10 border-t border-gray-800">
+                    A.D_VANTAGE SYSTEMS | ${new Date().toLocaleDateString()} | כל הזכויות שמורות
+                </div>
+            </div>
+            `;
+        }
+
+        window.downloadSummary = () => {
+            const html = `<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="UTF-8"><title>Proposal</title><script src="https://cdn.tailwindcss.com"><\/script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Montserrat:wght@400;600;700;800&family=Fira+Code:wght@300;400&display=swap" rel="stylesheet"><style>@media print {-webkit-print-color-adjust: exact; print-color-adjust: exact;} body { font-family: 'Heebo', sans-serif; }</style></head><body class="bg-[#020617]">${getProposalHTMLString(false)}</body></html>`;
+            const blob = new Blob([html], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Proposal_${window.appData.userInput.bizName || 'Draft'}.html`;
+            a.click();
+        };
+
+    </script>
+</body>
+</html>
