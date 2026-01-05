@@ -790,6 +790,7 @@
                 
                 window.appData = proposal.appData;
                 window.currentProposalId = proposal._id;
+                document.title = `הצעת מחיר - ${window.appData.userInput.bizName || 'לקוח'}`;
 
                 const htmlContent = getProposalHTMLString(true);
                 
@@ -1356,7 +1357,7 @@
                                 <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">משטח חתימה</label>
                                 <button onclick="clearSig()" class="text-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> נקה</button>
                             </div>
-                            <div class="flex-1 relative group bg-[#0f172a] rounded-xl overflow-hidden border border-slate-700 hover:border-[#38bdf8]/50 transition-colors">
+                            <div class="flex-1 min-h-[300px] relative group bg-[#0f172a] rounded-xl overflow-hidden border border-slate-700 hover:border-[#38bdf8]/50 transition-colors">
                                 <canvas id="signature-pad" class="w-full h-full cursor-crosshair"></canvas>
                                 <div class="absolute inset-0 pointer-events-none flex items-center justify-center text-slate-700 opacity-20 group-hover:opacity-0 transition-opacity">
                                     <div class="text-center">
