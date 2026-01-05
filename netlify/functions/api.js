@@ -9,9 +9,6 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// מחרוזת החיבור שלך (עם שם DB ספציפי crm_db)
-const MONGODB_URI = "mongodb+srv://noy_db_user:4Lw4Ddn2Vx8WMcKv@cluster0.pbfhx5m.mongodb.net/crm_db?retryWrites=true&w=majority&appName=Cluster0";
-
 // משתנה גלובלי לחיבור (מייעל ביצועים ב-Serverless)
 let conn = null;
 
