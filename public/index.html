@@ -626,7 +626,10 @@
 
     <script>
         // --- CONFIGURATION ---
-        const API_URL = '/api/proposals'; 
+        // Auto-detect API URL: use localhost:5000 for local dev, relative path for production
+        const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+            ? 'http://localhost:5000/api/proposals' 
+            : '/api/proposals'; 
         window.currentProposalId = null;
 
         // EXPANDED DATA TEMPLATES
@@ -751,11 +754,16 @@
             
             // Health Check for API
             fetch(API_URL)
-                .then(() => {
-                    document.getElementById('connection-status').className = 'w-2 h-2 rounded-full bg-green-500';
-                    document.getElementById('connection-text').innerText = 'Connected';
+                .then((res) => {
+                    if (res.ok) {
+                        document.getElementById('connection-status').className = 'w-2 h-2 rounded-full bg-green-500';
+                        document.getElementById('connection-text').innerText = 'Connected';
+                    } else {
+                        throw new Error(`HTTP ${res.status}`);
+                    }
                 })
-                .catch(() => {
+                .catch((e) => {
+                    console.error('API health check failed:', e);
                     document.getElementById('connection-status').className = 'w-2 h-2 rounded-full bg-red-500';
                     document.getElementById('connection-text').innerText = 'Offline';
                 });
@@ -1072,9 +1080,21 @@
             
             try {
                 const res = await fetch(API_URL);
+                
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
+                
                 const proposals = await res.json();
                 
-                if(proposals.length === 0) { list.innerHTML = '<div class="text-center text-gray-500">אין הצעות שמורות בשרת</div>'; return; }
+                if(!Array.isArray(proposals)) {
+                    throw new Error('Invalid response format');
+                }
+                
+                if(proposals.length === 0) { 
+                    list.innerHTML = '<div class="text-center text-gray-500 py-8">אין הצעות שמורות בשרת</div>'; 
+                    return; 
+                }
 
                 list.innerHTML = `<div class="space-y-3">${proposals.map(p => {
                     const isSigned = p.status === 'signed';
@@ -1103,25 +1123,46 @@
                     </div>`;
                 }).join('')}</div>`;
                 lucide.createIcons();
-            } catch (e) { list.innerHTML = '<div class="text-center text-red-400">שגיאה בטעינת נתונים מהשרת (האם הוא רץ?)</div>'; }
+            } catch (e) { 
+                console.error('Error loading history:', e);
+                list.innerHTML = `<div class="text-center text-red-400 py-8">
+                    <div class="text-lg font-bold mb-2">שגיאה בטעינת נתונים</div>
+                    <div class="text-sm text-gray-500">${sanitize(e.message || 'Unknown error')}</div>
+                    <div class="text-xs text-gray-600 mt-2">בדוק את הקונסול לפרטים נוספים</div>
+                </div>`; 
+            }
         };
 
         window.loadProposal = async (id) => {
             try {
                 const res = await fetch(`${API_URL}/${id}`);
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
                 const p = await res.json();
                 window.appData = p.appData;
                 window.currentProposalId = p._id;
                 document.getElementById('history-modal').classList.remove('open');
                 renderNav(); renderSection(window.appData.currentSection);
                 alert('הנתונים נטענו בהצלחה!');
-            } catch(e) { alert('שגיאה בטעינה'); }
+            } catch(e) { 
+                console.error('Error loading proposal:', e);
+                alert(`שגיאה בטעינה: ${e.message || 'Unknown error'}`); 
+            }
         };
 
         window.deleteProposal = async (id) => {
             if(!confirm('למחוק לצמיתות מהשרת?')) return;
-            await fetch(`${API_URL}/${id}`, {method:'DELETE'});
-            openHistory();
+            try {
+                const res = await fetch(`${API_URL}/${id}`, {method:'DELETE'});
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
+                openHistory();
+            } catch(e) {
+                console.error('Error deleting proposal:', e);
+                alert(`שגיאה במחיקה: ${e.message || 'Unknown error'}`);
+            }
         };
 
         window.viewSignature = (img, notes) => {

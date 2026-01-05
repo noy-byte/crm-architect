@@ -9,8 +9,8 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// מחרוזת החיבור - שימוש במשתנה סביבה (מומלץ) או fallback לערך ברירת מחדל
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://noy_db_user:4Lw4Ddn2Vx8WMcKv@cluster0.pbfhx5m.mongodb.net/crm_db?retryWrites=true&w=majority&appName=Cluster0";
+// מחרוזת החיבור שלך (עם שם DB ספציפי crm_db)
+const MONGODB_URI = "mongodb+srv://noy_db_user:4Lw4Ddn2Vx8WMcKv@cluster0.pbfhx5m.mongodb.net/crm_db?retryWrites=true&w=majority&appName=Cluster0";
 
 // משתנה גלובלי לחיבור (מייעל ביצועים ב-Serverless)
 let conn = null;
@@ -72,9 +72,10 @@ router.get('/proposals', async (req, res) => {
     try {
         await connectToDatabase();
         const proposals = await Proposal.find().sort({ createdAt: -1 });
-        res.json(proposals);
+        res.json(proposals || []); // Ensure we always return an array
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Error fetching proposals:', error);
+        res.status(500).json({ error: error.message || 'Failed to fetch proposals' });
     }
 });
 
@@ -130,5 +131,15 @@ router.delete('/proposals/:id', async (req, res) => {
 // חיבור ל-Netlify
 app.use('/.netlify/functions/api', router); // נתיב עבור Production
 app.use('/api', router); // נתיב עבור פיתוח מקומי
+
+// Catch-all for debugging
+app.use('*', (req, res) => {
+    res.status(404).json({ 
+        error: 'Route not found', 
+        path: req.path,
+        method: req.method,
+        availableRoutes: ['GET /proposals', 'GET /proposals/:id', 'POST /proposals', 'PATCH /proposals/:id/sign', 'DELETE /proposals/:id']
+    });
+});
 
 module.exports.handler = serverless(app);

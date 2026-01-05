@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -8,6 +9,9 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' })); // חשוב! מאפשר קבלת תמונות חתימה גדולות
+
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -33,7 +37,10 @@ const Proposal = mongoose.model('Proposal', ProposalSchema);
 
 // --- נתיבים ---
 
-app.get('/', (req, res) => res.send('CRM Server Running'));
+// API routes are below, but if no API route matches, serve index.html (for client-side routing)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.post('/api/proposals', async (req, res) => {
     try {
