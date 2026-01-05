@@ -18,10 +18,8 @@ async function connectToDatabase() {
         return conn;
     }
 
-    const MONGODB_URI = process.env.MONGODB_URI;
-    if (!MONGODB_URI) {
-        throw new Error('MONGODB_URI environment variable is not set');
-    }
+    // הגדרה ישירה של מחרוזת החיבור (ללא שימוש ב-ENV)
+    const MONGODB_URI = "mongodb+srv://noy_db_user:4Lw4Ddn2Vx8WMcKv@cluster0.pbfhx5m.mongodb.net/crm_db?retryWrites=true&w=majority&appName=Cluster0";
 
     conn = await mongoose.connect(MONGODB_URI);
     return conn;
@@ -136,7 +134,7 @@ app.use('/api', router); // נתיב עבור פיתוח מקומי
 app.use('*', (req, res) => {
     res.status(404).json({ 
         error: 'Route not found', 
-        path: req.path,
+        path: req.path, 
         method: req.method,
         availableRoutes: ['GET /proposals', 'GET /proposals/:id', 'POST /proposals', 'PATCH /proposals/:id/sign', 'DELETE /proposals/:id']
     });
