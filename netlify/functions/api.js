@@ -12,6 +12,21 @@ app.use(express.json({ limit: '10mb' }));
 // משתנה גלובלי לחיבור (מייעל ביצועים ב-Serverless)
 let conn = null;
 
+// פונקציה להתחברות למסד הנתונים (מותאמת ל-Serverless)
+async function connectToDatabase() {
+    if (conn && mongoose.connection.readyState === 1) {
+        return conn;
+    }
+
+    const MONGODB_URI = process.env.MONGODB_URI;
+    if (!MONGODB_URI) {
+        throw new Error('MONGODB_URI environment variable is not set');
+    }
+
+    conn = await mongoose.connect(MONGODB_URI);
+    return conn;
+}
+
 // --- הגדרת מבנה הנתונים (Schema) ---
 const ProposalSchema = new mongoose.Schema({
     title: String,
