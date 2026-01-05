@@ -953,13 +953,33 @@
             setTimeout(initCharts, 100);
         }
 
-        function renderBudget(container) {
+   function renderBudget(container) {
             const data = window.appData.userInput;
+            // קביעת ערך ברירת מחדל אם לא קיים
+            const terms = data.paymentTerms || '50% מקדמה בחתימה, 50% בסיום';
+
             let discountOptionsHtml = '';
             if (data.hasDiscount) {
                 discountOptionsHtml = `<div class="mt-6 animate-fade-in border-t border-white/10 pt-6"><label class="block text-xs font-bold text-[#38bdf8] mb-3 uppercase tracking-wider">סוג הנחה</label><div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">${discountOptions.map(opt => `<div onclick="setDiscountType('${opt.id}')" class="discount-option ${data.discountType === opt.id ? 'selected' : ''}">${opt.name}</div>`).join('')}</div><div class="flex gap-4"><div class="flex-1"><label class="block text-[10px] text-gray-500 mb-1">כותרת</label><input type="text" value="${sanitize(data.discountLabel)}" oninput="updateInput('discountLabel', this.value)" class="w-full p-2 bg-black/30 border border-white/10 rounded-lg text-sm"></div><div class="w-32"><label class="block text-[10px] text-gray-500 mb-1">סכום (₪)</label><input type="number" value="${sanitize(data.discountAmount)}" oninput="updateInput('discountAmount', this.value)" class="w-full p-2 bg-black/30 border border-white/10 rounded-lg text-sm text-[#38bdf8] font-bold"></div></div></div>`;
             }
-            container.innerHTML = `<div class="glass-card p-8 border-t-4 border-t-[#a3e635] max-w-lg mx-auto"><h3 class="font-bold text-lg mb-6 text-white">תקציב ומשאבים</h3><div class="space-y-6"><div><label class="block text-xs font-bold text-gray-500 mb-1">תקציב הטמעה (לפני הנחה) ₪</label><input type="number" placeholder="0" class="w-full p-3 bg-black/30 border border-white/10 rounded-xl font-mono text-[#a3e635] text-lg focus:border-[#a3e635] outline-none" value="${data.budgetAmount}" onchange="updateInput('budgetAmount', this.value)"></div><div><label class="block text-xs font-bold text-gray-500 mb-1">תאריך יעד</label><input type="date" class="w-full p-3 bg-black/30 border border-white/10 rounded-xl text-white outline-none focus:border-[#a3e635]" value="${data.targetDate}" onchange="updateInput('targetDate', this.value)"></div><div class="flex items-center justify-between pt-4 border-t border-white/10"><span class="text-sm font-bold text-gray-300">האם לתת הנחה?</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" onchange="toggleDiscount(this.checked)" class="sr-only peer" ${data.hasDiscount ? 'checked' : ''}><div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#38bdf8]"></div></label></div>${discountOptionsHtml}
+            
+            // הוספתי למטה את השדה של תנאי תשלום
+            container.innerHTML = `<div class="glass-card p-8 border-t-4 border-t-[#a3e635] max-w-lg mx-auto"><h3 class="font-bold text-lg mb-6 text-white">תקציב ומשאבים</h3><div class="space-y-6">
+            
+            <div><label class="block text-xs font-bold text-gray-500 mb-1">תקציב הטמעה (לפני הנחה) ₪</label><input type="number" placeholder="0" class="w-full p-3 bg-black/30 border border-white/10 rounded-xl font-mono text-[#a3e635] text-lg focus:border-[#a3e635] outline-none" value="${data.budgetAmount}" onchange="updateInput('budgetAmount', this.value)"></div>
+            
+            <div><label class="block text-xs font-bold text-gray-500 mb-1">תאריך יעד</label><input type="date" class="w-full p-3 bg-black/30 border border-white/10 rounded-xl text-white outline-none focus:border-[#a3e635]" value="${data.targetDate}" onchange="updateInput('targetDate', this.value)"></div>
+            
+            <div>
+                <label class="block text-xs font-bold text-gray-500 mb-1">תנאי תשלום</label>
+                <input type="text" 
+                       class="w-full p-3 bg-black/30 border border-white/10 rounded-xl text-white outline-none focus:border-[#a3e635] placeholder-gray-600" 
+                       placeholder="לדוגמה: 50% מקדמה, 50% במסירה"
+                       value="${sanitize(terms)}" 
+                       oninput="updateInput('paymentTerms', this.value)">
+            </div>
+            
+            <div class="flex items-center justify-between pt-4 border-t border-white/10"><span class="text-sm font-bold text-gray-300">האם לתת הנחה?</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" onchange="toggleDiscount(this.checked)" class="sr-only peer" ${data.hasDiscount ? 'checked' : ''}><div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#38bdf8]"></div></label></div>${discountOptionsHtml}
             <div class="flex items-center justify-between pt-4 border-t border-white/10 mt-4">
                 <span class="text-sm font-bold text-gray-300">הטבת תמיכה ופיתוח (3 חודשים)</span>
                 <label class="relative inline-flex items-center cursor-pointer">
@@ -969,7 +989,6 @@
             </div>
             </div></div>`;
         }
-
         // --- DATA MANIPULATION FUNCTIONS ---
         window.saveAndNext = (nextId) => { saveToLocal(); renderSection(nextId); document.getElementById('main-content').scrollTop = 0; };
         window.saveToLocal = () => localStorage.setItem('advantage_crm_pro', JSON.stringify(window.appData));
@@ -1611,8 +1630,7 @@
                                         <div class="space-y-3 text-xs text-slate-400">
                                             <div class="flex justify-between">
                                                 <span>תשלום:</span>
-                                                <span class="text-white">שוטף + 30</span>
-                                            </div>
+<span class="text-white text-right" style="direction: rtl;">${sanitize(d.paymentTerms || '50% מקדמה בחתימה, 50% בסיום')}</span>                                            </div>
                                             <div class="flex justify-between">
                                                 <span>הטמעה:</span>
                                                 <span class="text-white">עד 6 שבועות</span>
