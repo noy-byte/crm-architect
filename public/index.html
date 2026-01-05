@@ -995,29 +995,81 @@
 
         // --- STRESS TEST ---
         window.simulateStressTest = () => {
-            if(!confirm('זהירות: פעולה זו תמחק את הנתונים הנוכחיים ותמלא את המערכת בנתוני הדגמה לבדיקה. להמשיך?')) return;
-            window.appData.userInput.bizName = "טכנולוגיות עתיד בע\"מ";
-            window.appData.userInput.painPoint = "חוסר סנכרון בין המחלקות השונות, איבוד לידים, וזמן רב שמתבזבז על עבודה ידנית.";
-            window.appData.userInput.budgetAmount = "45000";
-            window.appData.userInput.targetDate = new Date().toISOString().split('T')[0];
-            window.appData.userInput.pipelineStages = ['פנייה ראשונית', 'סינון', 'פגישת אפיון', 'הצעת מחיר', 'משא ומתן', 'חתימה', 'העברה לביצוע'];
-            window.appData.userInput.selectedIntegrations = ['Gmail / Outlook', 'WhatsApp API', 'Monday.com', 'Slack'];
-            window.appData.userInput.selectedKPIs = ['סדר וארגון בנתונים', 'חיסכון בזמן תפעולי', 'שיפור אחוזי המרה'];
-            window.appData.userInput.automations = [
-                {trigger: 'ליד חדש נכנס', action: 'שלח הודעת וואטסאפ אוטומטית + פתח משימה'},
-                {trigger: 'הצעת מחיר נשלחה', action: 'צור תזכורת מעקב לעוד 3 ימים'},
-                {trigger: 'סטטוס עסקה שונה ל-Won', action: 'שלח מייל ברכה ללקוח + עדכן במאנדיי'}
+            if(!confirm('זהירות: פעולה זו תמחק את הנתונים הנוכחיים ותמלא את המערכת בנתוני "שבירו זכוכית". להמשיך?')) return;
+            
+            // 1. General Info
+            window.appData.userInput.bizName = "שבירו זכוכית בע\"מ";
+            window.appData.userInput.painPoint = "העברת תהליכי המכירה, ניהול ושימור הידע למערכת יעודית אחודה. המערכת תספק מעקב בזמן אמת אחר תהליך המכירה עבור כל לקוח פוטנציאלי, מעקב אחר הצעות מחיר, ניתוח סטטיסטיקות מכירה ועוד.";
+            window.appData.userInput.budgetAmount = "4500"; // Base price before discount
+            window.appData.userInput.targetDate = "2026-01-05"; // Based on proposal date
+
+            // 2. Pipeline
+            window.appData.userInput.pipelineStages = [
+                'פנייה ראשונית',
+                'הצעת מחיר',
+                'משא ומתן',
+                'הצעת מחיר סופית',
+                'חתימה',
+                'הגדרת ליד כלקוח',
+                'העברה לביצוע'
             ];
+
+            // 3. Integrations
+            window.appData.userInput.selectedIntegrations = [
+                'Gmail / Outlook',
+                'WhatsApp API',
+                'Facebook Lead Ads',
+                'Website Forms',
+                'Invoicing System',
+                'Zapier / Make'
+            ];
+
+            // 4. KPIs
+            window.appData.userInput.selectedKPIs = [
+                'סדר וארגון בנתונים',
+                'חיסכון בזמן תפעולי',
+                'שימור ידע ארגוני'
+            ];
+
+            // 5. Automations
+            window.appData.userInput.automations = [
+                {trigger: 'ליד חדש נכנס', action: 'יצירת משימה+עדכון במייל (ביטול העדכונים הנוכחים השונים)'},
+                {trigger: 'הצעת מחיר נשלחה', action: 'צור תזכורת מעקב לעוד 3 ימים'},
+                {trigger: 'סטטוס עסקה שונה ל-Won', action: 'הפק חוזה אוטומטי ושלח לחתימה'},
+                {trigger: 'תוקף הצעת מחיר עומד לפוג (יומיים)', action: 'שלח התראה לנציג המטפל'},
+                {trigger: 'סטטוס לא ענה', action: 'תזמון פולו-אפ לעוד יומיים'},
+                {trigger: 'הצעת מחיר נשלחה', action: '(לא נחתמה לאחר 24 שעות) הקפצת תזכורת פולו-אפ'},
+                {trigger: 'הצעת מחיר נחתמה', action: 'העברת הליד ללקוח'},
+                {trigger: 'ליד ידני חדש', action: 'סימון ויזואלי ברור שמדובר בליד מהמסמכים הפיזיים הקיימים'},
+                {trigger: 'בוצעה שיחה', action: 'עדכון לוג שיחות של הליד\\לקוח'},
+                {trigger: 'סימון כ\'שולם\'', action: 'הפקת קבלה ושמירה במיקום ייעודי | העברת הפריט למסד נתונים ייעודי - פריטים שהושלמו'},
+                {trigger: 'לחיצה על שליחת חשבונית', action: 'הפקת חשבונית אוטומטית על סמך הצעת המחיר ושמירה במיקום ייעודי | העתקה\\העברה של הפריט למסד נתונים ייעודי עבור חשבוניות'}
+            ];
+
+            // 6. Discount & Benefits
             window.appData.userInput.hasDiscount = true;
-            window.appData.userInput.discountAmount = "2500";
+            window.appData.userInput.discountType = 'custom'; // Or match one of the IDs if applicable, keeping custom for flexibility
+            window.appData.userInput.discountLabel = "הנחה מיוחדת - Friends and Family";
+            window.appData.userInput.discountAmount = "1000";
             window.appData.userInput.hasSupportBenefit = true;
             
-            window.appData.userInput.dataModel = [entityTemplates[0], entityTemplates[1], entityTemplates[3], entityTemplates[8]];
+            // 7. Data Model
+            // Constructing based on the HTML
+            window.appData.userInput.dataModel = [
+                { id: 1, name: 'לידים (Leads)', fields: ['שם פרטי', 'שם משפחה', 'טלפון', 'אימייל', 'מקור הגעה', 'סטטוס', 'הערות'] },
+                { id: 2, name: 'לקוחות (Contacts)', fields: ['שם מלא', 'תפקיד', 'טלפון', 'אימייל', 'מקושר לחברה'] },
+                { id: 3, name: 'עסקאות (Deals)', fields: ['שם העסקה', 'שווי עסקה', 'שלב בפייפליין', 'תאריך סגירה צפוי', 'איש קשר ראשי'] },
+                { id: 4, name: 'הצעות מחיר (Quotes)', fields: ['מספר הצעה', 'לקוח', 'תאריך תוקף', 'סה"כ לתשלום', 'סטטוס', 'לינק למסמך'] },
+                { id: 5, name: 'חברות (Accounts)', fields: ['שם החברה', 'ח.פ/ע.מ', 'כתובת', 'אתר אינטרנט', 'תעשייה', 'גודל חברה'] },
+                { id: 6, name: 'עובדים (Employees)', fields: ['שם מלא', 'תפקיד', 'מחלקה', 'טלפון', 'אימייל', 'תאריך תחילת עבודה'] },
+                { id: 7, name: 'קמפיינים (Campaigns)', fields: ['שם קמפיין', 'תקציב', 'פלטפורמה', 'קהל יעד', 'תאריך התחלה', 'לידים שהגיעו'] },
+                { id: 8, name: 'חוזים (Contracts)', fields: ['שם חוזה', 'תאריך התחלה', 'תאריך סיום', 'קובץ חתום', 'תנאי תשלום'] }
+            ];
             
             saveToLocal();
             renderNav();
             renderSection(window.appData.currentSection);
-            alert('נתוני בדיקה נטענו בהצלחה!');
+            alert('נתוני "שבירו זכוכית" נטענו בהצלחה!');
         }
 
         // --- CHARTS ---
