@@ -12,18 +12,6 @@ app.use(express.json({ limit: '10mb' }));
 // משתנה גלובלי לחיבור (מייעל ביצועים ב-Serverless)
 let conn = null;
 
-const connectToDatabase = async () => {
-    if (conn == null) {
-        console.log("Connecting to MongoDB...");
-        conn = mongoose.connect(MONGODB_URI, {
-            serverSelectionTimeoutMS: 5000
-        });
-        await conn;
-        console.log("Connected!");
-    }
-    return conn;
-};
-
 // --- הגדרת מבנה הנתונים (Schema) ---
 const ProposalSchema = new mongoose.Schema({
     title: String,
