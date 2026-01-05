@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>A.D_VANTAGE // CRM Architect Pro</title>
     
+    <!-- Favicon Configuration -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    
     <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
@@ -628,6 +632,7 @@
     <script>
         // --- CONFIGURATION ---
         // Auto-detect API URL: use localhost:5000 for local dev, relative path for production
+        // Updated to use /api/proposals so it goes through netlify.toml redirect
         const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
             ? 'http://localhost:5000/api/proposals' 
             : '/api/proposals'; 
