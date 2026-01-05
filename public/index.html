@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>A.D_VANTAGE // CRM Architect Pro</title>
     
-    <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -507,7 +506,6 @@
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-logo">
             <i data-lucide="code-2" style="width: 48px; height: 48px; color: white;"></i>
@@ -518,16 +516,13 @@
         </div>
     </div>
 
-    <!-- Aurora Background Enhanced -->
     <div class="aurora-container">
         <div class="aurora-blob blob-1"></div>
         <div class="aurora-blob blob-2"></div>
         <div class="aurora-blob blob-3"></div>
     </div>
 
-    <!-- MAIN APP WRAPPER -->
     <div id="main-app-wrapper" class="flex flex-col h-full" style="opacity: 0;">
-        <!-- Header Enhanced -->
         <header class="glass-panel z-30 h-16 flex items-center justify-between px-4 md:px-6 border-b border-white/5 flex-none">
             <div class="flex items-center gap-3 md:gap-4 overflow-hidden">
                 <img src="https://live.staticflickr.com/65535/55017651113_aec1078c9d_n.jpg" 
@@ -574,9 +569,7 @@
             </div>
         </header>
 
-        <!-- Main Layout -->
         <div class="flex flex-1 overflow-hidden">
-            <!-- Desktop Navigation -->
             <nav class="w-72 glass-panel border-l border-white/5 overflow-y-auto hidden md:block flex-none">
                 <div class="p-6">
                     <h3 class="text-xs font-bold text-gray-500 font-tech uppercase tracking-widest mb-6 opacity-70">
@@ -586,21 +579,16 @@
                 </div>
             </nav>
             
-            <!-- Mobile Navigation -->
             <nav class="md:hidden glass-panel border-b border-white/5 overflow-x-auto whitespace-nowrap p-3 flex gap-2 flex-none scrollbar-hide" 
                  id="mobile-nav"></nav>
             
-            <!-- Main Content -->
             <main class="flex-1 overflow-y-auto p-4 md:p-10 scroll-smooth relative" id="main-content">
-                <!-- Dynamic Content Here -->
-            </main>
+                </main>
         </div>
     </div>
 
-    <!-- CLIENT VIEW CONTAINER -->
     <div id="client-view-container" class="hidden w-full h-full overflow-y-auto bg-[#020617] p-4 md:p-8"></div>
 
-    <!-- HISTORY MODAL Enhanced -->
     <div id="history-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="p-6 border-b border-white/10 flex justify-between items-center bg-gradient-to-r from-transparent via-[#38bdf8]/5 to-transparent">
@@ -1255,7 +1243,7 @@
             }
         }
 
-// --- HTML GENERATOR FOR VIEW/DOWNLOAD (V2 - Clean Tech Design) ---
+        // --- HTML GENERATOR FOR VIEW/DOWNLOAD (V2 - Clean Tech Design) ---
         function getProposalHTMLString(isClientView = false) {
             const d = window.appData.userInput;
             const biz = d.bizName || 'לקוח יקר';
@@ -1432,6 +1420,13 @@
                     </div>
                 </div>`;
 
+            // Fix for ReferenceError: Define supportBenefitHtml before return
+            const supportBenefitHtml = d.hasSupportBenefit ? 
+                `<div class="mt-6 bg-[#a3e635]/10 rounded-lg p-3 border border-[#a3e635]/20">
+                    <div class="text-[#a3e635] font-bold text-xs mb-1"><i class="fa-solid fa-gift"></i> בונוס כלול</div>
+                    <div class="text-[10px] text-slate-300 leading-tight">חבילת תמיכה Premium (3 חודשים)</div>
+                </div>` : '';
+
             // --- Full Document Template ---
             return `
             <div class="font-sans bg-[#020617] min-h-screen text-right selection:bg-[#38bdf8] selection:text-[#020617] pb-20" dir="rtl">
@@ -1551,12 +1546,7 @@
                                             </div>
                                         </div>
                                         
-                                        ${supportBenefitHtml ? `
-                                            <div class="mt-6 bg-[#a3e635]/10 rounded-lg p-3 border border-[#a3e635]/20">
-                                                <div class="text-[#a3e635] font-bold text-xs mb-1"><i class="fa-solid fa-gift"></i> בונוס כלול</div>
-                                                <div class="text-[10px] text-slate-300 leading-tight">חבילת תמיכה Premium (3 חודשים)</div>
-                                            </div>
-                                        ` : ''}
+                                        ${supportBenefitHtml}
                                     </div>
                                 </div>
 
