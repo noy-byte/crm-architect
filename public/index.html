@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>A.D_VANTAGE // CRM Architect Pro</title>
     
+    <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Montserrat:wght@400;600;700;800&family=Fira+Code:wght@300;400&display=swap" rel="stylesheet">
+    <!-- Heebo Font for EVERYTHING -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
@@ -29,14 +31,14 @@
         body { 
             background-color: var(--bg-deep); 
             color: var(--white); 
-            font-family: 'Heebo', sans-serif; 
+            font-family: 'Heebo', sans-serif; /* Unified Font */
             overflow: hidden;
             position: relative;
         }
         
-        .font-tech { 
-            font-family: 'Montserrat', sans-serif; 
-            letter-spacing: -0.02em; 
+        /* Force Heebo on everything to ensure uniformity */
+        .font-sans, .font-mono, .font-tech {
+            font-family: 'Heebo', sans-serif !important;
         }
 
         /* Loading Screen - Enhanced */
@@ -506,6 +508,7 @@
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-logo">
             <i data-lucide="code-2" style="width: 48px; height: 48px; color: white;"></i>
@@ -516,20 +519,23 @@
         </div>
     </div>
 
+    <!-- Aurora Background Enhanced -->
     <div class="aurora-container">
         <div class="aurora-blob blob-1"></div>
         <div class="aurora-blob blob-2"></div>
         <div class="aurora-blob blob-3"></div>
     </div>
 
+    <!-- MAIN APP WRAPPER -->
     <div id="main-app-wrapper" class="flex flex-col h-full" style="opacity: 0;">
+        <!-- Header Enhanced -->
         <header class="glass-panel z-30 h-16 flex items-center justify-between px-4 md:px-6 border-b border-white/5 flex-none">
             <div class="flex items-center gap-3 md:gap-4 overflow-hidden">
                 <img src="https://live.staticflickr.com/65535/55017651113_aec1078c9d_n.jpg" 
                      class="w-10 h-10 md:w-12 md:h-12 rounded-xl shadow-xl border border-white/20 hover:scale-110 transition-transform cursor-pointer" 
                      alt="Logo">
                 <div class="flex flex-col">
-                    <div class="font-tech font-bold text-sm md:text-lg tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-[#38bdf8] to-[#a3e635] animate-pulse">
+                    <div class="font-bold text-sm md:text-lg tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-[#38bdf8] to-[#a3e635] animate-pulse">
                         &lt;/A.D_VANTAGE&gt;
                     </div>
                     <div class="flex items-center gap-2 text-[10px] md:text-xs text-gray-400">
@@ -569,26 +575,33 @@
             </div>
         </header>
 
+        <!-- Main Layout -->
         <div class="flex flex-1 overflow-hidden">
+            <!-- Desktop Navigation -->
             <nav class="w-72 glass-panel border-l border-white/5 overflow-y-auto hidden md:block flex-none">
                 <div class="p-6">
-                    <h3 class="text-xs font-bold text-gray-500 font-tech uppercase tracking-widest mb-6 opacity-70">
+                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6 opacity-70">
                         SYSTEM MODULES
                     </h3>
                     <ul class="space-y-2" id="nav-list"></ul>
                 </div>
             </nav>
             
+            <!-- Mobile Navigation -->
             <nav class="md:hidden glass-panel border-b border-white/5 overflow-x-auto whitespace-nowrap p-3 flex gap-2 flex-none scrollbar-hide" 
                  id="mobile-nav"></nav>
             
+            <!-- Main Content -->
             <main class="flex-1 overflow-y-auto p-4 md:p-10 scroll-smooth relative" id="main-content">
-                </main>
+                <!-- Dynamic Content Here -->
+            </main>
         </div>
     </div>
 
-    <div id="client-view-container" class="hidden w-full h-full overflow-y-auto bg-[#020617] p-4 md:p-8"></div>
+    <!-- CLIENT VIEW CONTAINER -->
+    <div id="client-view-container" class="hidden w-full h-full overflow-y-auto bg-[#020617]"></div>
 
+    <!-- HISTORY MODAL Enhanced -->
     <div id="history-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="p-6 border-b border-white/10 flex justify-between items-center bg-gradient-to-r from-transparent via-[#38bdf8]/5 to-transparent">
@@ -775,11 +788,7 @@
 
                 const htmlContent = getProposalHTMLString(true);
                 
-                container.innerHTML = `
-                    <div class="max-w-4xl mx-auto bg-[#020617] mb-20 shadow-2xl">
-                        ${htmlContent}
-                    </div>
-                `;
+                container.innerHTML = htmlContent;
 
                 if (proposal.status === 'signed') {
                     showSignedState(proposal);
@@ -1250,7 +1259,7 @@
             const total = parseInt(d.budgetAmount || 0) - (d.hasDiscount ? parseInt(d.discountAmount||0) : 0);
             const dateStr = new Date().toLocaleDateString('he-IL', { year: 'numeric', month: 'long', day: 'numeric' });
             
-            // תיקון: הגדרת המשתנה החסר
+            // Define reportCatalogFlat INSIDE the function to avoid reference errors
             const reportCatalogFlat = [ 
                 ...reportCatalog.sales, 
                 ...reportCatalog.marketing, 
@@ -1307,6 +1316,13 @@
                     </div>
                 </div>`;
             }
+
+            // Define supportBenefitHtml BEFORE the return statement to fix ReferenceError
+            const supportBenefitHtml = d.hasSupportBenefit ? 
+                `<div class="mt-6 bg-[#a3e635]/10 rounded-lg p-3 border border-[#a3e635]/20">
+                    <div class="text-[#a3e635] font-bold text-xs mb-1"><i class="fa-solid fa-gift"></i> בונוס כלול</div>
+                    <div class="text-[10px] text-slate-300 leading-tight">חבילת תמיכה Premium (3 חודשים)</div>
+                </div>` : '';
 
             // --- Components Generation ---
 
@@ -1382,7 +1398,6 @@
             const reportsHtml = (d.selectedReports || []).length > 0 ? 
                 `<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
                     ${(d.selectedReports || []).map(id => {
-                        // כעת המשתנה reportCatalogFlat מוגדר וזמין
                         const r = reportCatalogFlat.find(x => x.id === id);
                         if (!r) return '';
                         return `
@@ -1420,24 +1435,19 @@
                     </div>
                 </div>`;
 
-            // Fix for ReferenceError: Define supportBenefitHtml before return
-            const supportBenefitHtml = d.hasSupportBenefit ? 
-                `<div class="mt-6 bg-[#a3e635]/10 rounded-lg p-3 border border-[#a3e635]/20">
-                    <div class="text-[#a3e635] font-bold text-xs mb-1"><i class="fa-solid fa-gift"></i> בונוס כלול</div>
-                    <div class="text-[10px] text-slate-300 leading-tight">חבילת תמיכה Premium (3 חודשים)</div>
-                </div>` : '';
-
             // --- Full Document Template ---
             return `
             <div class="font-sans bg-[#020617] min-h-screen text-right selection:bg-[#38bdf8] selection:text-[#020617] pb-20" dir="rtl">
                 
+                <!-- BACKGROUND ELEMENTS -->
                 <div class="fixed inset-0 pointer-events-none">
                     <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
                     <div class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-[#38bdf8]/10 to-transparent opacity-40"></div>
                 </div>
 
-                <div class="relative max-w-[900px] mx-auto p-6 md:p-12">
+                <div class="relative w-full max-w-[1400px] mx-auto p-6 md:p-12">
                     
+                    <!-- HEADER -->
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16 border-b border-white/10 pb-8">
                         <div>
                             <div class="flex items-center gap-2 mb-4">
@@ -1457,10 +1467,13 @@
                         </div>
                     </div>
 
+                    <!-- TWO COLUMN LAYOUT -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
                         
+                        <!-- LEFT COLUMN (Main Content) -->
                         <div class="lg:col-span-2 space-y-12">
                             
+                            <!-- Executive Summary -->
                             <section>
                                 <h3 class="flex items-center gap-2 text-[#38bdf8] font-bold mb-4 text-sm uppercase tracking-widest">
                                     <i class="fa-solid fa-bullseye"></i> אתגר ומטרה
@@ -1471,6 +1484,7 @@
                                 ${kpiHtml}
                             </section>
 
+                            <!-- Specs -->
                             <section class="break-inside-avoid">
                                 <div class="flex items-center gap-3 mb-6">
                                     <span class="text-2xl font-bold text-white">01</span>
@@ -1482,6 +1496,7 @@
                                 </div>
                             </section>
 
+                            <!-- Process -->
                             <section class="break-inside-avoid">
                                 <div class="flex items-center gap-3 mb-6">
                                     <span class="text-2xl font-bold text-white">02</span>
@@ -1500,6 +1515,7 @@
                                 </div>
                             </section>
 
+                            <!-- Automation -->
                             <section class="break-inside-avoid">
                                 <div class="flex items-center gap-3 mb-6">
                                     <span class="text-2xl font-bold text-white">03</span>
@@ -1511,11 +1527,14 @@
 
                         </div>
 
+                        <!-- RIGHT COLUMN (Sticky Sidebar) -->
                         <div class="lg:col-span-1">
                             <div class="sticky top-8 space-y-8">
                                 
+                                <!-- Price Card -->
                                 <div class="bg-gradient-to-b from-[#1e293b] to-[#0f172a] p-1 rounded-2xl shadow-2xl border border-white/10">
                                     <div class="bg-[#020617] rounded-xl p-6 relative overflow-hidden">
+                                        <!-- Top Decoration -->
                                         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#38bdf8] to-[#a3e635]"></div>
                                         
                                         <div class="text-center mb-6">
@@ -1550,11 +1569,13 @@
                                     </div>
                                 </div>
 
+                                <!-- Timeline Widget -->
                                 <div class="bg-[#1e293b]/20 p-6 rounded-2xl border border-white/5">
                                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">לוחות זמנים</h4>
                                     ${timelineHtml}
                                 </div>
 
+                                <!-- Reports Widget -->
                                 <div class="bg-[#1e293b]/20 p-6 rounded-2xl border border-white/5">
                                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">מערך דוחות</h4>
                                     ${reportsHtml}
@@ -1567,6 +1588,7 @@
 
                     ${signatureBlock}
 
+                    <!-- FOOTER -->
                     <div class="mt-24 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-[10px] text-slate-600 uppercase tracking-widest">
                         <div>&copy; ${new Date().getFullYear()} A.D_VANTAGE Systems</div>
                         <div class="flex gap-4 mt-2 md:mt-0">
@@ -1577,6 +1599,7 @@
 
                 </div>
 
+                <!-- Print Styles -->
                 <style>
                     @media print {
                         body { background: white !important; color: black !important; -webkit-print-color-adjust: exact; }
@@ -1595,7 +1618,7 @@
         }
 
         window.downloadSummary = () => {
-            const html = `<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="UTF-8"><title>Proposal</title><script src="https://cdn.tailwindcss.com"><\/script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Montserrat:wght@400;600;700;800&family=Fira+Code:wght@300;400&display=swap" rel="stylesheet"><style>@media print {-webkit-print-color-adjust: exact; print-color-adjust: exact;} body { font-family: 'Heebo', sans-serif; }</style></head><body class="bg-[#020617]">${getProposalHTMLString(false)}</body></html>`;
+            const html = `<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="UTF-8"><title>Proposal</title><script src="https://cdn.tailwindcss.com"><\/script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet"><style>@media print {-webkit-print-color-adjust: exact; print-color-adjust: exact;} body { font-family: 'Heebo', sans-serif; }</style></head><body class="bg-[#020617]">${getProposalHTMLString(false)}</body></html>`;
             const blob = new Blob([html], { type: 'text/html' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
